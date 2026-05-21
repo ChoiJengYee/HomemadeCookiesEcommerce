@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop | Homemade Cookies</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/index.html">
+      <span class="logo-icon" aria-hidden="true">🍪</span>
+      Homemade Cookies
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/index.html" class="active">Shop</a>
+      <a href="/cart.html">Cart</a>
+      <a href="/track-order.html">Track order</a>
+      <a href="/admin/products.html">Admin</a>
+    </nav>
+    <a class="btn-cart" href="/cart.html">
+      🛒 Cart <span id="cart-count" class="cart-badge" hidden></span>
+    </a>
+  </header>
+
+  <section class="page-hero">
+    <h1>Our Cookies</h1>
+    <p>Freshly baked homemade treats — browse and add to your cart.</p>
+  </section>
+
+  <main class="main-wide" id="shop">
+    <p id="catalog-loading" class="status-text">Loading cookies…</p>
+    <p id="catalog-error" class="status-text error" hidden></p>
+    <div id="product-grid" class="product-grid" aria-live="polite"></div>
+    <div id="catalog-message" class="toast" hidden aria-live="polite"></div>
+  </main>
+
+  <footer class="site-footer">Homemade Cookies · Shop</footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/catalog.js"></script>
+</body>
+</html>

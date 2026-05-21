@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Homemade Cookies</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/index.html">
+      <span class="logo-icon" aria-hidden="true">🍪</span>
+      Homemade Cookies
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/index.html">Shop</a>
+      <a href="/cart.html">Cart</a>
+      <a href="/track-order.html">Track order</a>
+      <a href="/admin/products.html">Admin</a>
+    </nav>
+    <a class="btn-cart" href="/cart.html">🛒 Cart</a>
+  </header>
+
+  <section class="page-hero">
+    <h1>Checkout</h1>
+    <p>Facade pattern — one call to <code>OrderManagementFacade.PlaceOrder</code></p>
+  </section>
+
+  <main class="main-wide">
+    <div class="card">
+      <span class="pattern-badge">Facade</span>
+      <h2>Place order</h2>
+      <p class="hint">Mock payment: use any card for success, <strong>PENDING</strong> for pending, <strong>FAIL</strong> for declined.</p>
+
+      <section id="checkout-cart" class="checkout-lines" aria-label="Order summary">
+        <p class="status-text">Loading cart…</p>
+      </section>
+
+      <form id="checkout-form" class="checkout-form">
+        <div class="form-group">
+          <label for="paymentMethod">Payment method</label>
+          <select id="paymentMethod" name="paymentMethod">
+            <option value="Card">Credit / debit card</option>
+            <option value="Mock">Mock gateway</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cardDetails">Card details (mock)</label>
+          <input type="text" id="cardDetails" name="cardDetails" placeholder="1234-5678-9012-3456" required>
+        </div>
+        <div class="form-group">
+          <label for="customerEmail">Email (optional)</label>
+          <input type="email" id="customerEmail" name="customerEmail" placeholder="customer@homemadecookies.com">
+        </div>
+        <button type="submit" class="btn-primary" id="checkout-submit">Place order</button>
+      </form>
+
+      <div id="checkout-result" class="result" hidden aria-live="polite"></div>
+      <p id="checkout-track" class="hint" hidden>
+        <a href="/track-order.html" id="track-order-link">Track this order</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="site-footer">Homemade Cookies · Checkout</footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>

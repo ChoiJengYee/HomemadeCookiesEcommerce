@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Add Cookie | Homemade Cookies</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/index.html">
+      <span class="logo-icon" aria-hidden="true">🍪</span>
+      Homemade Cookies
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/index.html">Shop</a>
+      <a href="/cart.html">Cart</a>
+      <a href="/admin/products.html" class="active">Add cookie</a>
+      <a href="/admin/orders.html">Orders</a>
+    </nav>
+    <a class="btn-cart" href="/cart.html">🛒 Cart</a>
+  </header>
+
+  <section class="page-hero">
+    <h1>Add Cookie Product</h1>
+    <p>Factory Method — ICookieFactory creates catalog items</p>
+  </section>
+
+  <main>
+    <div class="card">
+      <span class="pattern-badge">Factory Method</span>
+      <h2>New cookie</h2>
+      <p class="hint">ChocolateFactory, FruitFactory, OatmealFactory, and SaltyFactory (class diagram).</p>
+
+      <form id="add-cookie-form">
+        <div class="form-group">
+          <label for="factoryKey">Factory (ICookieFactory)</label>
+          <select id="factoryKey" name="factoryKey" required>
+            <option value="Chocolate">ChocolateFactory</option>
+            <option value="Fruit">FruitFactory</option>
+            <option value="Oatmeal">OatmealFactory</option>
+            <option value="Salty">SaltyFactory</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cookieType">Cookie type</label>
+          <select id="cookieType" name="cookieType" required>
+            <option value="Chocolate">Chocolate Chip</option>
+            <option value="DarkChocolate">Dark Chocolate</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" placeholder="e.g. Classic homemade cookies with rich chocolate chips."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="price">Price (RM)</label>
+          <input type="number" id="price" name="price" min="0" step="0.01" value="12.99" required>
+        </div>
+
+        <div class="form-group">
+          <label for="stock">Stock quantity</label>
+          <input type="number" id="stock" name="stock" min="0" step="1" value="50" required>
+        </div>
+
+        <div class="form-group">
+          <label for="categoryId">Category</label>
+          <select id="categoryId" name="categoryId" required>
+            <option value="1">Best Seller</option>
+            <option value="2">Recommended</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary">Create via Factory</button>
+      </form>
+
+      <div id="result" class="result" hidden aria-live="polite"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">Homemade Cookies · Admin</footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
