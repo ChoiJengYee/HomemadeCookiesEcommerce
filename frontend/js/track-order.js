@@ -24,7 +24,7 @@
       <ul>${items.map((i) => `<li>${i.cookieName} × ${i.quantity} @ ${formatMoney(i.priceAtPurchase)}</li>`).join('')}</ul>
     `;
 
-    cancelBtn.hidden = data.statusId !== 1;
+    cancelBtn.hidden = !data.canCancel;
     cancelBtn.dataset.orderId = data.orderId;
   }
 
@@ -68,5 +68,11 @@
     }
   });
 
-  if (presetId) loadStatus(Number(presetId));
+  window.HomemadeCookieApi.getMe().then((data) => {
+    if (!data.authenticated) {
+      window.location.href = '/login.html?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+      return;
+    }
+    if (presetId) loadStatus(Number(presetId));
+  });
 })();

@@ -1,4 +1,5 @@
 (function () {
+  window.HomemadeCookieAuth.requireAdmin();
   const FACTORY_COOKIE_TYPES = {
     Chocolate: [
       { value: 'Chocolate', label: 'Chocolate Chip' },

@@ -1,8 +1,5 @@
 const API_BASE = `${window.location.origin}/api`;
 
-/** Demo customer from seed.sql (user_id = 2) */
-const DEMO_CUSTOMER_ID = 2;
-
 function normalizeProducts(data) {
   if (Array.isArray(data)) return data;
   if (data && Array.isArray(data.value)) return data.value;
@@ -12,6 +9,7 @@ function normalizeProducts(data) {
 async function apiRequest(path, options = {}) {
   const url = `${API_BASE}${path}`;
   const response = await fetch(url, {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {})
@@ -31,15 +29,43 @@ async function apiRequest(path, options = {}) {
 
   if (!response.ok) {
     const message = data?.message || data?.title || `Request failed (${response.status})`;
-    throw new Error(message);
+    const err = new Error(message);
+    err.status = response.status;
+    throw err;
   }
 
   return data;
 }
 
+function getCustomerId() {
+  return window.HomemadeCookieAuth?.getCustomerId?.() ?? null;
+}
+
 window.HomemadeCookieApi = {
-  DEMO_CUSTOMER_ID,
   normalizeProducts,
+  getCustomerId,
+
+  getMe() {
+    return apiRequest('/auth/me');
+  },
+
+  login(email, password) {
+    return apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+  },
+
+  logout() {
+    return apiRequest('/auth/logout', { method: 'POST' });
+  },
+
+  register(payload) {
+    return apiRequest('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
 
   async getProducts() {
     const data = await apiRequest('/products');
@@ -50,35 +76,53 @@ window.HomemadeCookieApi = {
     return apiRequest(`/products/${id}`);
   },
 
-  getCart(customerId = DEMO_CUSTOMER_ID) {
-    return apiRequest(`/cart/${customerId}`);
+  getCart() {
+    const id = getCustomerId();
+    if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+    return apiRequest(`/cart/${id}`);
   },
 
-  addToCart(cookieId, quantity = 1, customerId = DEMO_CUSTOMER_ID) {
-    return apiRequest(`/cart/${customerId}/items`, {
+  addToCart(cookieId, quantity = 1) {
+    const id = getCustomerId();
+    if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+    return apiRequest(`/cart/${id}/items`, {
       method: 'POST',
       body: JSON.stringify({ cookieId, quantity })
     });
   },
 
-  updateCartItem(cookieId, quantity, customerId = DEMO_CUSTOMER_ID) {
-    return apiRequest(`/cart/${customerId}/items/${cookieId}`, {
+  updateCartItem(cookieId, quantity) {
+    const id = getCustomerId();
+    if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+    return apiRequest(`/cart/${id}/items/${cookieId}`, {
       method: 'PUT',
       body: JSON.stringify({ quantity })
     });
   },
 
-  removeFromCart(cookieId, customerId = DEMO_CUSTOMER_ID) {
-    return apiRequest(`/cart/${customerId}/items/${cookieId}`, {
-      method: 'DELETE'
+  removeFromCart(cookieId) {
+    const id = getCustomerId();
+    if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+    return apiRequest(`/cart/${id}/items/${cookieId}`, { method: 'DELETE' });
+  },
+
+  getWishlist() {
+    return apiRequest('/wishlist');
+  },
+
+  addToWishlist(cookieId) {
+    return apiRequest('/wishlist/items', {
+      method: 'POST',
+      body: JSON.stringify({ cookieId })
     });
   },
 
-  createCookie(payload) {
-    return apiRequest('/admin/cookies', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+  removeFromWishlist(cookieId) {
+    return apiRequest(`/wishlist/items/${cookieId}`, { method: 'DELETE' });
+  },
+
+  moveWishlistToCart() {
+    return apiRequest('/wishlist/move-to-cart', { method: 'POST' });
   },
 
   checkout(payload) {
@@ -94,6 +138,13 @@ window.HomemadeCookieApi = {
 
   cancelOrder(orderId) {
     return apiRequest(`/orders/${orderId}/cancel`, { method: 'POST' });
+  },
+
+  createCookie(payload) {
+    return apiRequest('/admin/cookies', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
   },
 
   getAdminOrders() {

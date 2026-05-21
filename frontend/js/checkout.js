@@ -46,7 +46,6 @@
     submitBtn.disabled = true;
 
     const payload = {
-      customerId: window.HomemadeCookieApi.DEMO_CUSTOMER_ID,
       paymentMethod: document.getElementById('paymentMethod').value,
       cardDetails: document.getElementById('cardDetails').value.trim(),
       customerEmail: document.getElementById('customerEmail').value.trim() || null
@@ -76,5 +75,11 @@
     }
   });
 
-  loadCartPreview();
+  window.HomemadeCookieAuth.requireCustomer().then((user) => {
+    if (user) {
+      const emailField = document.getElementById('customerEmail');
+      if (emailField && !emailField.value) emailField.value = user.email || '';
+      loadCartPreview();
+    }
+  });
 })();

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Homemade Cookies</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/index.html">
+      <span class="logo-icon" aria-hidden="true">🍪</span>
+      Homemade Cookies
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/index.html">Shop</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <h1>Sign in</h1>
+    <p>Customer and Admin accounts (class diagram: User.Login)</p>
+  </section>
+
+  <main class="auth-main">
+    <div class="card auth-card">
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label for="roleHint">Demo accounts</label>
+          <select id="roleHint">
+            <option value="">— choose to fill —</option>
+            <option value="customer">Customer (customer@homemadecookies.com)</option>
+            <option value="admin">Admin (admin@homemadecookies.com)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary">Login</button>
+      </form>
+      <div id="login-result" class="result" hidden aria-live="polite"></div>
+      <p class="hint auth-switch">New customer? <a href="#" id="show-register">Register</a></p>
+    </div>
+
+    <div class="card auth-card" id="register-card" hidden>
+      <h2>Register (Customer)</h2>
+      <form id="register-form">
+        <div class="form-group">
+          <label for="regName">Name</label>
+          <input type="text" id="regName" required>
+        </div>
+        <div class="form-group">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="regAddress">Address</label>
+          <input type="text" id="regAddress" required>
+        </div>
+        <div class="form-group">
+          <label for="regPhone">Phone</label>
+          <input type="text" id="regPhone" required>
+        </div>
+        <button type="submit" class="btn-primary">Register</button>
+      </form>
+      <div id="register-result" class="result" hidden aria-live="polite"></div>
+      <p class="hint auth-switch"><a href="#" id="show-login">Back to login</a></p>
+    </div>
+  </main>
+
+  <footer class="site-footer">Homemade Cookies · Login</footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth-page.js"></script>
+</body>
+</html>

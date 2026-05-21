@@ -6,5 +6,5 @@ public class PendingState : IOrderState
 
     public void Cancel(OrderContext order) => order.SetState(new CancelledState());
 
-    public string GetStatusName() => "Pending Approval";
+    public string GetStatusName() => "Placing order / Awaiting payment";
 }

@@ -1,4 +1,5 @@
 (function () {
+  window.HomemadeCookieAuth.requireAdmin();
   const loading = document.getElementById('orders-loading');
   const errorEl = document.getElementById('orders-error');
   const listEl = document.getElementById('orders-list');

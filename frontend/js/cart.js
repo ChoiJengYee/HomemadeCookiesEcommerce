@@ -1,4 +1,4 @@
-const { DEMO_CUSTOMER_ID: cartCustomerId, getCart, updateCartItem, removeFromCart } = window.HomemadeCookieApi;
+const { getCart, updateCartItem, removeFromCart } = window.HomemadeCookieApi;
 
 const cartItemsEl = document.getElementById('cart-items');
 const cartEmptyEl = document.getElementById('cart-empty');
@@ -76,7 +76,7 @@ function renderCart(data) {
 
 async function loadCart() {
   try {
-    const data = await getCart(DEMO_CUSTOMER_ID);
+    const data = await getCart();
     renderCart(data);
   } catch (err) {
     showMessage(err.message, true);
@@ -118,4 +118,6 @@ cartItemsEl.addEventListener('click', async (event) => {
   }
 });
 
-loadCart();
+window.HomemadeCookieAuth.requireCustomer().then((user) => {
+  if (user) loadCart();
+});

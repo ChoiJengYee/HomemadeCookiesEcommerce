@@ -1,11 +1,14 @@
+using System.Security.Claims;
 using HomemadeCookie.Api.Models;
 using HomemadeCookie.Api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomemadeCookie.Api.Controllers;
 
 [ApiController]
 [Route("api/cart")]
+[Authorize(Roles = "Customer")]
 public class CartController : ControllerBase
 {
     private readonly CartRepository _cartRepository;
@@ -18,6 +21,9 @@ public class CartController : ControllerBase
     [HttpGet("{customerId:int}")]
     public async Task<IActionResult> GetCart(int customerId, CancellationToken cancellationToken)
     {
+        if (!OwnsCart(customerId))
+            return Forbid();
+
         var items = await _cartRepository.GetItemsAsync(customerId, cancellationToken);
         var total = items.Sum(i => i.LineTotal);
 
@@ -36,6 +42,9 @@ public class CartController : ControllerBase
         [FromBody] AddCartItemRequest request,
         CancellationToken cancellationToken)
     {
+        if (!OwnsCart(customerId))
+            return Forbid();
+
         if (request.CookieId <= 0)
             return BadRequest(new { message = "CookieId must be a positive integer." });
 
@@ -67,6 +76,9 @@ public class CartController : ControllerBase
         [FromBody] UpdateCartItemRequest request,
         CancellationToken cancellationToken)
     {
+        if (!OwnsCart(customerId))
+            return Forbid();
+
         if (request.Quantity < 0)
             return BadRequest(new { message = "Quantity cannot be negative." });
 
@@ -98,6 +110,9 @@ public class CartController : ControllerBase
         int cookieId,
         CancellationToken cancellationToken)
     {
+        if (!OwnsCart(customerId))
+            return Forbid();
+
         await _cartRepository.RemoveItemAsync(customerId, cookieId, cancellationToken);
         var items = await _cartRepository.GetItemsAsync(customerId, cancellationToken);
 
@@ -108,5 +123,11 @@ public class CartController : ControllerBase
             items,
             total = items.Sum(i => i.LineTotal)
         });
+    }
+
+    private bool OwnsCart(int customerId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return int.TryParse(userId, out var id) && id == customerId;
     }
 }

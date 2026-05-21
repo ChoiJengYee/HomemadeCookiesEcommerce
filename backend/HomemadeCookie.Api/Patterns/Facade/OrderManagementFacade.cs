@@ -108,7 +108,7 @@ public class OrderManagementFacade
             request.CustomerId,
             lines,
             total,
-            OrderStatusIds.Pending,
+            OrderStatusIds.Confirmed,
             request.PaymentMethod,
             "Paid",
             cancellationToken);

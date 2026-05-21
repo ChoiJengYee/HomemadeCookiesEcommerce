@@ -2,12 +2,14 @@ using HomemadeCookie.Api.Models;
 using HomemadeCookie.Api.Patterns.Factory;
 using HomemadeCookie.Api.Patterns.State;
 using HomemadeCookie.Api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomemadeCookie.Api.Controllers;
 
 [ApiController]
 [Route("api/admin")]
+[Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
     private readonly CookieRepository _cookieRepository;

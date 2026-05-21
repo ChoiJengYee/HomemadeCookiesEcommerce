@@ -1,4 +1,4 @@
-const { DEMO_CUSTOMER_ID: catalogCustomerId, getProducts, getCart, addToCart } = window.HomemadeCookieApi;
+const { getProducts, getCart, addToCart, addToWishlist } = window.HomemadeCookieApi;
 
 const productGridEl = document.getElementById('product-grid');
 const catalogLoadingEl = document.getElementById('catalog-loading');
@@ -33,11 +33,17 @@ function showToast(text, isError = false) {
   }, 3000);
 }
 
+function isCustomerLoggedIn() {
+  return window.HomemadeCookieAuth?.getUser?.()?.role === 'Customer';
+}
+
 function renderProducts(products) {
   if (!products.length) {
     productGridEl.innerHTML = '<p class="empty-state">No cookies in the catalog yet.</p>';
     return;
   }
+
+  const showWishlist = isCustomerLoggedIn();
 
   productGridEl.innerHTML = products.map((p) => {
     const outOfStock = p.stock <= 0;
@@ -53,21 +59,33 @@ function renderProducts(products) {
         <p class="product-stock ${outOfStock ? 'out' : ''}">
           ${outOfStock ? 'Out of stock' : `${p.stock} in stock`}
         </p>
-        <button
-          type="button"
-          class="btn-add"
-          data-cookie-id="${p.cookieId}"
-          ${outOfStock ? 'disabled' : ''}
-        >
-          ${outOfStock ? 'Unavailable' : 'Add to cart'}
-        </button>
+        <div class="product-actions">
+          <button
+            type="button"
+            class="btn-add"
+            data-cookie-id="${p.cookieId}"
+            data-action="cart"
+            ${outOfStock ? 'disabled' : ''}
+          >
+            ${outOfStock ? 'Unavailable' : 'Add to cart'}
+          </button>
+          ${showWishlist ? `
+            <button type="button" class="btn-secondary btn-wish" data-cookie-id="${p.cookieId}" data-action="wish">
+              ♥ Wishlist
+            </button>
+          ` : ''}
+        </div>
       </article>`;
   }).join('');
 }
 
 async function refreshCartBadge() {
+  if (!isCustomerLoggedIn()) {
+    updateCartBadge(0);
+    return;
+  }
   try {
-    const cart = await getCart(DEMO_CUSTOMER_ID);
+    const cart = await getCart();
     updateCartBadge(cart.itemCount ?? 0);
   } catch {
     updateCartBadge(0);
@@ -75,10 +93,6 @@ async function refreshCartBadge() {
 }
 
 async function loadCatalog() {
-  // #region agent log
-  fetch('http://127.0.0.1:7671/ingest/af3b3b42-a4e5-4a88-afab-eb9b34c91827',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'138024'},body:JSON.stringify({sessionId:'138024',location:'catalog.js:loadCatalog',message:'loadCatalog start',data:{origin:window.location.origin,protocol:window.location.protocol},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
-
   catalogLoadingEl.hidden = false;
   catalogErrorEl.hidden = true;
   productGridEl.innerHTML = '';
@@ -86,37 +100,64 @@ async function loadCatalog() {
   try {
     const products = await getProducts();
     catalogLoadingEl.hidden = true;
-    // #region agent log
-    fetch('http://127.0.0.1:7671/ingest/af3b3b42-a4e5-4a88-afab-eb9b34c91827',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'138024'},body:JSON.stringify({sessionId:'138024',location:'catalog.js:loadCatalog',message:'loadCatalog success',data:{productCount:products.length},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     renderProducts(products);
     await refreshCartBadge();
   } catch (err) {
     catalogLoadingEl.hidden = true;
     catalogErrorEl.hidden = false;
     catalogErrorEl.textContent = err.message;
-    // #region agent log
-    fetch('http://127.0.0.1:7671/ingest/af3b3b42-a4e5-4a88-afab-eb9b34c91827',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'138024'},body:JSON.stringify({sessionId:'138024',location:'catalog.js:loadCatalog',message:'loadCatalog error',data:{error:err.message},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
   }
 }
 
+function redirectLogin() {
+  const next = encodeURIComponent(window.location.pathname);
+  window.location.href = `/login.html?next=${next}`;
+}
+
 productGridEl.addEventListener('click', async (event) => {
-  const button = event.target.closest('.btn-add');
+  const button = event.target.closest('button');
   if (!button || button.disabled) return;
 
   const cookieId = Number(button.dataset.cookieId);
-  button.disabled = true;
+  const action = button.dataset.action;
 
-  try {
-    await addToCart(cookieId, 1);
-    showToast('Added to cart!');
-    await refreshCartBadge();
-  } catch (err) {
-    showToast(err.message, true);
-  } finally {
-    button.disabled = false;
+  if (action === 'wish') {
+    if (!isCustomerLoggedIn()) {
+      redirectLogin();
+      return;
+    }
+    button.disabled = true;
+    try {
+      await addToWishlist(cookieId);
+      showToast('Added to wishlist!');
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      button.disabled = false;
+    }
+    return;
+  }
+
+  if (action === 'cart') {
+    if (!isCustomerLoggedIn()) {
+      redirectLogin();
+      return;
+    }
+    button.disabled = true;
+    try {
+      await addToCart(cookieId, 1);
+      showToast('Added to cart!');
+      await refreshCartBadge();
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      button.disabled = false;
+    }
   }
 });
 
 loadCatalog();
+window.HomemadeCookieAuth?.refreshFromServer?.().then(() => {
+  getProducts().then((products) => renderProducts(products));
+  refreshCartBadge();
+});
