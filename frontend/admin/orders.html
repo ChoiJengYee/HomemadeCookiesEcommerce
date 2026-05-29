@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Orders | Homemade Cookies</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/index.html">
+      <span class="logo-icon" aria-hidden="true">🍪</span>
+      Homemade Cookies
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="/index.html">Shop</a>
+      <a href="/cart.html">Cart</a>
+      <a href="/admin/products.html">Add cookie</a>
+      <a href="/admin/orders.html" class="active">Orders</a>
+    </nav>
+    <span id="nav-user" class="nav-user"></span>
+  </header>
+
+  <section class="page-hero">
+    <h1>Manage orders</h1>
+    <p>State pattern — advance status along Pending → Confirmed → Baking → Ready → Completed</p>
+  </section>
+
+  <main class="main-wide">
+    <div class="card">
+      <span class="pattern-badge">State</span>
+      <p id="orders-loading" class="status-text">Loading orders…</p>
+      <p id="orders-error" class="status-text error" hidden></p>
+      <div id="orders-list" class="orders-list" hidden></div>
+      <div id="orders-message" class="result" hidden aria-live="polite"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">Homemade Cookies · Admin orders</footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin-orders.js"></script>
+</body>
+</html>
