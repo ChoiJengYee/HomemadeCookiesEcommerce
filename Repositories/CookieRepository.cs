@@ -118,6 +118,42 @@ public class CookieRepository
         }
     }
 
+    public async Task<bool> UpdateAsync(int cookieId, UpdateCookieRequest request, CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            UPDATE cookies
+            SET name = @name,
+                description = @description,
+                price = @price,
+                stock = @stock,
+                category_id = @categoryId
+            WHERE cookie_id = @cookieId
+            """;
+
+        await using var connection = DatabaseConnection.Instance.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("name", request.Name);
+        command.Parameters.AddWithValue("description", (object?)request.Description ?? DBNull.Value);
+        command.Parameters.AddWithValue("price", request.Price);
+        command.Parameters.AddWithValue("stock", request.Stock);
+        command.Parameters.AddWithValue("categoryId", request.CategoryId);
+        command.Parameters.AddWithValue("cookieId", cookieId);
+
+        return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
+    }
+
+    public async Task<bool> DeleteAsync(int cookieId, CancellationToken cancellationToken = default)
+    {
+        const string sql = "DELETE FROM cookies WHERE cookie_id = @cookieId";
+
+        await using var connection = DatabaseConnection.Instance.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("cookieId", cookieId);
+        return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
+    }
+
     private static CookieEntity MapCookie(NpgsqlDataReader reader) => new()
     {
         CookieId = reader.GetInt32(0),

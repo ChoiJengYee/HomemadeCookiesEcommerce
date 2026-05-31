@@ -6,10 +6,23 @@
 
   let currentUser = null;
 
+  function normalizeUser(user) {
+    if (!user) return null;
+    return {
+      ...user,
+      userId: user.userId ?? user.UserId,
+      name: user.name ?? user.Name,
+      email: user.email ?? user.Email,
+      role: user.role ?? user.Role,
+      address: user.address ?? user.Address,
+      phoneNumber: user.phoneNumber ?? user.PhoneNumber
+    };
+  }
+
   function saveUser(user) {
-    currentUser = user;
-    if (user) {
-      sessionStorage.setItem('hc_user', JSON.stringify(user));
+    currentUser = normalizeUser(user);
+    if (currentUser) {
+      sessionStorage.setItem('hc_user', JSON.stringify(currentUser));
     } else {
       sessionStorage.removeItem('hc_user');
     }
@@ -19,7 +32,7 @@
   function loadStoredUser() {
     try {
       const raw = sessionStorage.getItem('hc_user');
-      if (raw) currentUser = JSON.parse(raw);
+      if (raw) currentUser = normalizeUser(JSON.parse(raw));
     } catch {
       currentUser = null;
     }
@@ -30,10 +43,13 @@
     const adminLinks = document.querySelectorAll('[data-admin-only]');
     const customerLinks = document.querySelectorAll('[data-customer-only]');
 
-    if (userEl) {
+      if (userEl) {
       if (currentUser) {
+        const roleLabel = currentUser.role ? ` (${currentUser.role})` : '';
+        const profileLink = currentUser.role === 'Admin' ? '/admin/dashboard.html' : '/dashboard.html';
         userEl.innerHTML = `
-          <span class="nav-user-name">${currentUser.name} (${currentUser.role})</span>
+          <a href="${profileLink}" class="btn-link" aria-label="Profile">👤</a>
+          <span class="nav-user-name">${currentUser.name}${roleLabel}</span>
           <button type="button" class="btn-link" id="btn-logout">Logout</button>
         `;
         userEl.querySelector('#btn-logout')?.addEventListener('click', () => {
@@ -42,7 +58,7 @@
           });
         });
       } else {
-        userEl.innerHTML = '<a href="/login.html">Login</a>';
+        userEl.innerHTML = '<a href="/login.html" class="btn-link">👤 Login</a>';
       }
     }
 

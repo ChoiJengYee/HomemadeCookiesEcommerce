@@ -22,8 +22,7 @@
     moveBtn.hidden = true;
 
     try {
-      const data = await window.HomemadeCookieApi.getWishlist();
-      const items = data.items || [];
+      const items = await window.HomemadeCookieApi.getWishlist();
       loading.hidden = true;
 
       if (!items.length) {

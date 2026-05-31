@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Orders | Homemade Cookies</title>
+  <title>Manage Users | Homemade Cookies</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -14,10 +14,9 @@
     </a>
     <nav class="site-nav" aria-label="Main">
       <a href="/index.html">Shop</a>
-      <a href="/cart.html">Cart</a>
       <a href="/admin/dashboard.html">Dashboard</a>
-      <a href="/admin/products.html">Add cookie</a>
-      <a href="/admin/orders.html" class="active">Orders</a>
+      <a href="/admin/products.html">Products</a>
+      <a href="/admin/orders.html">Orders</a>
       <a href="/admin/categories.html">Categories</a>
       <a href="/admin/users.html">Users</a>
     </nav>
@@ -25,24 +24,35 @@
   </header>
 
   <section class="page-hero">
-    <h1>Manage orders</h1>
-    <p>State pattern — advance status along Pending → Confirmed → Baking → Ready → Completed</p>
+    <h1>User accounts</h1>
+    <p>Update customer/admin roles and review account information.</p>
   </section>
 
   <main class="main-wide">
     <div class="card">
-      <span class="pattern-badge">State</span>
-      <p id="orders-loading" class="status-text">Loading orders…</p>
-      <p id="orders-error" class="status-text error" hidden></p>
-      <div id="orders-list" class="orders-list" hidden></div>
-      <div id="orders-message" class="result" hidden aria-live="polite"></div>
+      <h2>Account management</h2>
+      <div id="user-result" class="result" hidden aria-live="polite"></div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="user-list"></tbody>
+      </table>
     </div>
   </main>
 
-  <footer class="site-footer">Homemade Cookies · Admin orders</footer>
+  <footer class="site-footer">Homemade Cookies · Users</footer>
 
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
-  <script src="/js/admin-orders.js"></script>
+  <script src="/js/admin-users.js"></script>
 </body>
 </html>

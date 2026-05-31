@@ -13,13 +13,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 DatabaseConnection.Instance.Configure(connectionString);
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<CookieRepository>();
 builder.Services.AddSingleton<CartRepository>();
 builder.Services.AddSingleton<OrderRepository>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<WishlistRepository>();
+builder.Services.AddSingleton<CategoryRepository>();
 
 builder.Services.AddSingleton<InventorySystem>();
 builder.Services.AddSingleton<PaymentGateway>();
@@ -33,6 +33,8 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
+
+builder.Services.AddAuthorization();
 
 // Simple cookie authentication for demo purposes
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -58,14 +60,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
 app.UseCors();
 
-var frontendPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "..", "frontend"));
+var frontendPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "frontend"));
 if (Directory.Exists(frontendPath))
 {
     var frontendProvider = new PhysicalFileProvider(frontendPath);

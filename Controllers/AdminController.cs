@@ -13,11 +13,19 @@ public class AdminController : ControllerBase
 {
     private readonly CookieRepository _cookieRepository;
     private readonly OrderRepository _orderRepository;
+    private readonly CategoryRepository _categoryRepository;
+    private readonly UserRepository _userRepository;
 
-    public AdminController(CookieRepository cookieRepository, OrderRepository orderRepository)
+    public AdminController(
+        CookieRepository cookieRepository,
+        OrderRepository orderRepository,
+        CategoryRepository categoryRepository,
+        UserRepository userRepository)
     {
         _cookieRepository = cookieRepository;
         _orderRepository = orderRepository;
+        _categoryRepository = categoryRepository;
+        _userRepository = userRepository;
     }
 
     [HttpGet("orders")]
@@ -107,5 +115,93 @@ public class AdminController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    [HttpPut("cookies/{id:int}")]
+    public async Task<IActionResult> UpdateCookie(
+        int id,
+        [FromBody] UpdateCookieRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return BadRequest(new { message = "Cookie name is required." });
+
+        if (request.Price < 0 || request.Stock < 0)
+            return BadRequest(new { message = "Price and stock must be zero or greater." });
+
+        if (request.CategoryId <= 0)
+            return BadRequest(new { message = "CategoryId must be a positive integer." });
+
+        var updated = await _cookieRepository.UpdateAsync(id, request, cancellationToken);
+        return updated ? NoContent() : NotFound(new { message = $"Cookie {id} not found." });
+    }
+
+    [HttpDelete("cookies/{id:int}")]
+    public async Task<IActionResult> DeleteCookie(int id, CancellationToken cancellationToken)
+    {
+        var deleted = await _cookieRepository.DeleteAsync(id, cancellationToken);
+        return deleted ? NoContent() : NotFound(new { message = $"Cookie {id} not found." });
+    }
+
+    [HttpGet("categories")]
+    public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
+    {
+        var categories = await _categoryRepository.GetAllAsync(cancellationToken);
+        return Ok(categories);
+    }
+
+    [HttpPost("categories")]
+    public async Task<IActionResult> CreateCategory(
+        [FromBody] CategoryRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return BadRequest(new { message = "Category name is required." });
+
+        var categoryId = await _categoryRepository.InsertAsync(request.Name, cancellationToken);
+        return Created($"/api/admin/categories/{categoryId}", new { categoryId, name = request.Name });
+    }
+
+    [HttpPut("categories/{id:int}")]
+    public async Task<IActionResult> UpdateCategory(
+        int id,
+        [FromBody] CategoryRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return BadRequest(new { message = "Category name is required." });
+
+        var updated = await _categoryRepository.UpdateAsync(id, request.Name, cancellationToken);
+        return updated ? NoContent() : NotFound(new { message = $"Category {id} not found." });
+    }
+
+    [HttpDelete("categories/{id:int}")]
+    public async Task<IActionResult> DeleteCategory(int id, CancellationToken cancellationToken)
+    {
+        var deleted = await _categoryRepository.DeleteAsync(id, cancellationToken);
+        return deleted ? NoContent() : NotFound(new { message = $"Category {id} not found." });
+    }
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
+    {
+        var users = await _userRepository.GetAllAsync(cancellationToken);
+        return Ok(users);
+    }
+
+    [HttpPut("users/{id:int}/role")]
+    public async Task<IActionResult> UpdateUserRole(
+        int id,
+        [FromBody] UpdateUserRoleRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Role))
+            return BadRequest(new { message = "Role is required." });
+
+        if (request.Role is not ("Admin" or "Customer"))
+            return BadRequest(new { message = "Role must be Admin or Customer." });
+
+        var updated = await _userRepository.UpdateRoleAsync(id, request.Role, cancellationToken);
+        return updated ? NoContent() : NotFound(new { message = $"User {id} not found." });
     }
 }

@@ -41,6 +41,10 @@ function getCustomerId() {
   return window.HomemadeCookieAuth?.getCustomerId?.() ?? null;
 }
 
+function resolveWishlistPath(customerId, suffix = '') {
+  return customerId ? `/wishlist/${customerId}${suffix}` : `/wishlist${suffix}`;
+}
+
 window.HomemadeCookieApi = {
   normalizeProducts,
   getCustomerId,
@@ -53,7 +57,7 @@ window.HomemadeCookieApi = {
     return apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password })
-    });
+    }).then((data) => data.user);
   },
 
   logout() {
@@ -62,6 +66,20 @@ window.HomemadeCookieApi = {
 
   register(payload) {
     return apiRequest('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }).then((data) => data.user);
+  },
+
+  updateProfile(payload) {
+    return apiRequest('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    }).then((data) => data.user);
+  },
+
+  forgotPassword(payload) {
+    return apiRequest('/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify(payload)
     });
@@ -107,22 +125,26 @@ window.HomemadeCookieApi = {
   },
 
   getWishlist() {
-    return apiRequest('/wishlist');
+    const id = getCustomerId();
+    return apiRequest(resolveWishlistPath(id));
   },
 
   addToWishlist(cookieId) {
-    return apiRequest('/wishlist/items', {
+    const id = getCustomerId();
+    return apiRequest(resolveWishlistPath(id, '/items'), {
       method: 'POST',
       body: JSON.stringify({ cookieId })
     });
   },
 
   removeFromWishlist(cookieId) {
-    return apiRequest(`/wishlist/items/${cookieId}`, { method: 'DELETE' });
+    const id = getCustomerId();
+    return apiRequest(resolveWishlistPath(id, `/items/${cookieId}`), { method: 'DELETE' });
   },
 
   moveWishlistToCart() {
-    return apiRequest('/wishlist/move-to-cart', { method: 'POST' });
+    const id = getCustomerId();
+    return apiRequest(resolveWishlistPath(id, '/move-to-cart'), { method: 'POST' });
   },
 
   checkout(payload) {
@@ -143,6 +165,50 @@ window.HomemadeCookieApi = {
   createCookie(payload) {
     return apiRequest('/admin/cookies', {
       method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateCookie(cookieId, payload) {
+    return apiRequest(`/admin/cookies/${cookieId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  deleteCookie(cookieId) {
+    return apiRequest(`/admin/cookies/${cookieId}`, { method: 'DELETE' });
+  },
+
+  getAdminCategories() {
+    return apiRequest('/admin/categories');
+  },
+
+  createCategory(payload) {
+    return apiRequest('/admin/categories', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateCategory(categoryId, payload) {
+    return apiRequest(`/admin/categories/${categoryId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  deleteCategory(categoryId) {
+    return apiRequest(`/admin/categories/${categoryId}`, { method: 'DELETE' });
+  },
+
+  getAdminUsers() {
+    return apiRequest('/admin/users');
+  },
+
+  updateUserRole(userId, payload) {
+    return apiRequest(`/admin/users/${userId}/role`, {
+      method: 'PUT',
       body: JSON.stringify(payload)
     });
   },

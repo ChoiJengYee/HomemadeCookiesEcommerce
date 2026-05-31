@@ -7,7 +7,7 @@
   const roleHint = document.getElementById('roleHint');
 
   const params = new URLSearchParams(window.location.search);
-  const nextUrl = params.get('next') || '/index.html';
+  const nextUrl = params.get('next') || '/dashboard.html';
 
   roleHint?.addEventListener('change', () => {
     const key = roleHint.value;
@@ -31,7 +31,7 @@
 
   function redirectAfterLogin(user) {
     if (user.role === 'Admin') {
-      window.location.href = params.get('next')?.includes('admin') ? nextUrl : '/admin/orders.html';
+      window.location.href = params.get('next')?.includes('admin') ? nextUrl : '/admin/dashboard.html';
       return;
     }
     window.location.href = nextUrl;
@@ -73,7 +73,7 @@
       });
       registerResult.className = 'result success';
       registerResult.textContent = `Registered as ${user.name}. Redirecting…`;
-      window.location.href = '/index.html';
+      window.location.href = '/dashboard.html';
     } catch (err) {
       registerResult.className = 'result error';
       registerResult.textContent = err.message;

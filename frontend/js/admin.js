@@ -1,4 +1,4 @@
-(function () {
+(async function () {
   window.HomemadeCookieAuth.requireAdmin();
   const FACTORY_COOKIE_TYPES = {
     Chocolate: [
@@ -36,6 +36,21 @@
     populateCookieTypes(factorySelect.value);
   });
 
+  async function loadCategories() {
+    try {
+      const categories = await window.HomemadeCookieApi.getAdminCategories();
+      const categorySelect = document.getElementById('categoryId');
+      categorySelect.innerHTML = categories.map((category) => `
+        <option value="${category.categoryId}">${category.name}</option>
+      `).join('');
+    } catch (err) {
+      resultBox.hidden = false;
+      resultBox.className = 'result error';
+      resultBox.textContent = 'Unable to load categories. Please refresh.';
+    }
+  }
+
+  await loadCategories();
   populateCookieTypes(factorySelect.value);
 
   form.addEventListener('submit', async (event) => {
