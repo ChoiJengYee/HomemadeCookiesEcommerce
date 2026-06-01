@@ -4,5 +4,9 @@ namespace HomemadeCookie.Api.Patterns.Factory.Products;
 
 public class DarkChocolateCookie : Cookie
 {
-    public DarkChocolateCookie() => Name = "Dark Chocolate";
+    public DarkChocolateCookie()
+    {
+        Name = "Dark Chocolate";
+        ImageUrl = "/images/dark-chocolate.jfif";
+    }
 }

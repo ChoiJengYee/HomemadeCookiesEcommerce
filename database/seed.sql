@@ -32,13 +32,13 @@ INSERT INTO categories (category_id, name) VALUES
 SELECT setval(pg_get_serial_sequence('categories', 'category_id'), 2);
 
 -- Sample cookies (factory types represented in catalog)
-INSERT INTO cookies (cookie_id, name, description, price, stock, category_id) VALUES
-    (1, 'Chocolate Chip', 'Classic buttery cookies with rich chocolate chips.', 12.00, 50, 1),
-    (2, 'Dark Chocolate', 'Intense cocoa cookies for chocolate lovers.', 14.00, 40, 1),
-    (3, 'Strawberry', 'Soft cookies with real strawberry pieces.', 13.00, 35, 2),
-    (4, 'Orange Zest', 'Bright citrus cookies with orange zest.', 11.50, 30, 2),
-    (5, 'Oatmeal Raisin', 'Hearty oatmeal cookies with plump raisins.', 10.00, 45, 2),
-    (6, 'Peanut Butter', 'Creamy peanut butter cookies with a crisp edge.', 12.50, 25, 1);
+INSERT INTO cookies (cookie_id, name, description, image_url, price, stock, category_id) VALUES
+    (1, 'Chocolate Chip', 'Classic buttery cookies with rich chocolate chips.', '/images/chocolate-chip.jfif', 12.00, 50, 1),
+    (2, 'Dark Chocolate', 'Intense cocoa cookies for chocolate lovers.', '/images/dark-chocolate.jfif', 14.00, 40, 1),
+    (3, 'Strawberry', 'Soft cookies with real strawberry pieces.', '/images/strawberry.jfif', 13.00, 35, 2),
+    (4, 'Orange Zest', 'Bright citrus cookies with orange zest.', '/images/orange-zest.jfif', 11.50, 30, 2),
+    (5, 'Oatmeal Raisin', 'Hearty oatmeal cookies with plump raisins.', '/images/oatmeal-raisin.jpg', 10.00, 45, 2),
+    (6, 'Peanut Butter', 'Creamy peanut butter cookies with a crisp edge.', '/images/peanut-butter.jfif', 12.50, 25, 1);
 
 SELECT setval(pg_get_serial_sequence('cookies', 'cookie_id'), 6);
 

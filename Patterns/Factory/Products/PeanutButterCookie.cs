@@ -4,5 +4,9 @@ namespace HomemadeCookie.Api.Patterns.Factory.Products;
 
 public class PeanutButterCookie : Cookie
 {
-    public PeanutButterCookie() => Name = "Peanut Butter";
+    public PeanutButterCookie()
+    {
+        Name = "Peanut Butter";
+        ImageUrl = "/images/peanut-butter.jfif";
+    }
 }

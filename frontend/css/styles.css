@@ -453,9 +453,14 @@ main code {
   border-radius: 999px;
 }
 
-.product-card-icon {
-  font-size: 2.25rem;
-  margin-bottom: 0.25rem;
+.product-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  margin-bottom: 0.75rem;
 }
 
 .product-card h3 {

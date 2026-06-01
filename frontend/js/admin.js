@@ -13,8 +13,18 @@
     Salty: [{ value: 'PeanutButter', label: 'Peanut Butter' }]
   };
 
+  const COOKIE_IMAGE_URLS = {
+    Chocolate: '/images/chocolate-chip.jfif',
+    DarkChocolate: '/images/dark-chocolate.jfif',
+    Strawberry: '/images/strawberry.jfif',
+    Orange: '/images/orange-zest.jfif',
+    Oatmeal: '/images/oatmeal-raisin.jpg',
+    PeanutButter: '/images/peanut-butter.jfif'
+  };
+
   const factorySelect = document.getElementById('factoryKey');
   const cookieTypeSelect = document.getElementById('cookieType');
+  const imageUrlInput = document.getElementById('imageUrl');
   const form = document.getElementById('add-cookie-form');
   const resultBox = document.getElementById('result');
 
@@ -30,10 +40,21 @@
     });
 
     cookieTypeSelect.disabled = types.length === 0;
+    setImageUrlForType(cookieTypeSelect.value);
+  }
+
+  function setImageUrlForType(cookieType) {
+    const defaultUrl = COOKIE_IMAGE_URLS[cookieType] ?? '/images/cookie-default.svg';
+    imageUrlInput.value = defaultUrl;
+    imageUrlInput.placeholder = defaultUrl;
   }
 
   factorySelect.addEventListener('change', () => {
     populateCookieTypes(factorySelect.value);
+  });
+
+  cookieTypeSelect.addEventListener('change', () => {
+    setImageUrlForType(cookieTypeSelect.value);
   });
 
   async function loadCategories() {
@@ -63,6 +84,7 @@
       factoryKey: factorySelect.value,
       cookieType: cookieTypeSelect.value,
       description: document.getElementById('description').value.trim() || null,
+      imageUrl: document.getElementById('imageUrl').value.trim() || null,
       price: Number(document.getElementById('price').value),
       stock: Number(document.getElementById('stock').value),
       categoryId: Number(document.getElementById('categoryId').value)

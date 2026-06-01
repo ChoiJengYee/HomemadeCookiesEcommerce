@@ -43,16 +43,17 @@ function renderProducts(products) {
     return;
   }
 
-  const showWishlist = isCustomerLoggedIn();
+  const showActions = isCustomerLoggedIn();
 
   productGridEl.innerHTML = products.map((p) => {
     const outOfStock = p.stock <= 0;
     const description = escapeHtml(p.description || 'Freshly baked homemade cookies.');
     const category = escapeHtml(p.categoryName || '');
+    const imageUrl = escapeHtml(p.imageUrl ?? '/images/cookie-default.svg');
     return `
       <article class="product-card">
         <span class="product-card-badge">${category}</span>
-        <div class="product-card-icon" aria-hidden="true">🍪</div>
+        <img class="product-card-image" src="${imageUrl}" alt="${escapeHtml(p.name)} image">
         <h3>${escapeHtml(p.name)}</h3>
         <p class="product-desc">${description}</p>
         <p class="product-price">${formatPrice(p.price)}</p>
@@ -60,20 +61,24 @@ function renderProducts(products) {
           ${outOfStock ? 'Out of stock' : `${p.stock} in stock`}
         </p>
         <div class="product-actions">
-          <button
-            type="button"
-            class="btn-add"
-            data-cookie-id="${p.cookieId}"
-            data-action="cart"
-            ${outOfStock ? 'disabled' : ''}
-          >
-            ${outOfStock ? 'Unavailable' : 'Add to cart'}
-          </button>
-          ${showWishlist ? `
+          ${showActions ? `
+            <button
+              type="button"
+              class="btn-add"
+              data-cookie-id="${p.cookieId}"
+              data-action="cart"
+              ${outOfStock ? 'disabled' : ''}
+            >
+              ${outOfStock ? 'Unavailable' : 'Add to cart'}
+            </button>
             <button type="button" class="btn-secondary btn-wish" data-cookie-id="${p.cookieId}" data-action="wish">
               ♥ Wishlist
             </button>
-          ` : ''}
+          ` : `
+            <button type="button" class="btn-secondary btn-login" data-action="login">
+              👀 Login to order
+            </button>
+          `}
         </div>
       </article>`;
   }).join('');
@@ -114,20 +119,6 @@ function redirectLogin() {
   window.location.href = `/login.html?next=${next}`;
 }
 
-async function ensureLoggedIn() {
-  try {
-    const user = await window.HomemadeCookieAuth.refreshFromServer();
-    if (!user) {
-      redirectLogin();
-      return false;
-    }
-    return true;
-  } catch {
-    redirectLogin();
-    return false;
-  }
-}
-
 productGridEl.addEventListener('click', async (event) => {
   const button = event.target.closest('button');
   if (!button || button.disabled) return;
@@ -137,7 +128,14 @@ productGridEl.addEventListener('click', async (event) => {
 
   if (action === 'wish') {
     if (!isCustomerLoggedIn()) {
-      redirectLogin();
+      const confirmLogin = window.confirm(
+        'Wishlist requires registration. Would you like to login or register now?'
+      );
+      if (confirmLogin) {
+        redirectLogin();
+      } else {
+        showToast('Continue browsing as guest. Login to save favorites.', true);
+      }
       return;
     }
     button.disabled = true;
@@ -168,9 +166,12 @@ productGridEl.addEventListener('click', async (event) => {
       button.disabled = false;
     }
   }
+
+  if (action === 'login') {
+    redirectLogin();
+  }
 });
 
 (async function () {
-  if (!(await ensureLoggedIn())) return;
   await loadCatalog();
 })();

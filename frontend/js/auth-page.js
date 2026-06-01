@@ -57,6 +57,10 @@
     }
   });
 
+  document.getElementById('guest-proceed')?.addEventListener('click', () => {
+    window.location.href = '/dashboard.html';
+  });
+
   registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     registerResult.hidden = false;

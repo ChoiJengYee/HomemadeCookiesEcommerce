@@ -83,6 +83,9 @@ public class AdminController : ControllerBase
             var cookie = factory.CreateCookie(request.CookieType);
 
             cookie.Description = request.Description;
+            cookie.ImageUrl = string.IsNullOrWhiteSpace(request.ImageUrl)
+                ? cookie.ImageUrl
+                : request.ImageUrl.Trim();
             cookie.Price = request.Price;
             cookie.Stock = request.Stock;
             cookie.CategoryId = request.CategoryId;
@@ -91,6 +94,7 @@ public class AdminController : ControllerBase
             {
                 Name = cookie.Name,
                 Description = cookie.Description,
+                ImageUrl = cookie.ImageUrl,
                 Price = cookie.Price,
                 Stock = cookie.Stock,
                 CategoryId = cookie.CategoryId
@@ -104,6 +108,7 @@ public class AdminController : ControllerBase
                 cookieId,
                 cookie.Name,
                 cookie.Description,
+                cookie.ImageUrl,
                 cookie.Price,
                 cookie.Stock,
                 cookie.CategoryId,
