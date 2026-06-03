@@ -4,5 +4,9 @@ namespace HomemadeCookie.Api.Patterns.Factory.Products;
 
 public class OrangeCookie : Cookie
 {
-    public OrangeCookie() => Name = "Orange Zest";
+    public OrangeCookie()
+    {
+        Name = "Orange Zest";
+        ImageUrl = "/images/orange-zest.jfif";
+    }
 }

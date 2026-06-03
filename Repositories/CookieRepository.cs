@@ -9,7 +9,7 @@ public class CookieRepository
     public async Task<IReadOnlyList<CookieEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         const string sql = """
-            SELECT c.cookie_id, c.name, c.description, c.price, c.stock, c.category_id, cat.name
+            SELECT c.cookie_id, c.name, c.description, c.image_url, c.price, c.stock, c.category_id, cat.name
             FROM cookies c
             INNER JOIN categories cat ON cat.category_id = c.category_id
             ORDER BY c.cookie_id
@@ -32,7 +32,7 @@ public class CookieRepository
     public async Task<CookieEntity?> GetByIdAsync(int cookieId, CancellationToken cancellationToken = default)
     {
         const string sql = """
-            SELECT c.cookie_id, c.name, c.description, c.price, c.stock, c.category_id, cat.name
+            SELECT c.cookie_id, c.name, c.description, c.image_url, c.price, c.stock, c.category_id, cat.name
             FROM cookies c
             INNER JOIN categories cat ON cat.category_id = c.category_id
             WHERE c.cookie_id = @cookieId
@@ -53,8 +53,8 @@ public class CookieRepository
     public async Task<int> InsertAsync(CookieEntity cookie, CancellationToken cancellationToken = default)
     {
         const string sql = """
-            INSERT INTO cookies (name, description, price, stock, category_id)
-            VALUES (@name, @description, @price, @stock, @categoryId)
+            INSERT INTO cookies (name, description, image_url, price, stock, category_id)
+            VALUES (@name, @description, @imageUrl, @price, @stock, @categoryId)
             RETURNING cookie_id
             """;
 
@@ -63,6 +63,7 @@ public class CookieRepository
         await using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("name", cookie.Name);
         command.Parameters.AddWithValue("description", (object?)cookie.Description ?? DBNull.Value);
+        command.Parameters.AddWithValue("imageUrl", (object?)cookie.ImageUrl ?? DBNull.Value);
         command.Parameters.AddWithValue("price", cookie.Price);
         command.Parameters.AddWithValue("stock", cookie.Stock);
         command.Parameters.AddWithValue("categoryId", cookie.CategoryId);
@@ -124,6 +125,7 @@ public class CookieRepository
             UPDATE cookies
             SET name = @name,
                 description = @description,
+                image_url = @imageUrl,
                 price = @price,
                 stock = @stock,
                 category_id = @categoryId
@@ -135,6 +137,7 @@ public class CookieRepository
         await using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("name", request.Name);
         command.Parameters.AddWithValue("description", (object?)request.Description ?? DBNull.Value);
+        command.Parameters.AddWithValue("imageUrl", (object?)request.ImageUrl ?? DBNull.Value);
         command.Parameters.AddWithValue("price", request.Price);
         command.Parameters.AddWithValue("stock", request.Stock);
         command.Parameters.AddWithValue("categoryId", request.CategoryId);
@@ -159,9 +162,10 @@ public class CookieRepository
         CookieId = reader.GetInt32(0),
         Name = reader.GetString(1),
         Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-        Price = reader.GetDecimal(3),
-        Stock = reader.GetInt32(4),
-        CategoryId = reader.GetInt32(5),
-        CategoryName = reader.GetString(6)
+        ImageUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
+        Price = reader.GetDecimal(4),
+        Stock = reader.GetInt32(5),
+        CategoryId = reader.GetInt32(6),
+        CategoryName = reader.GetString(7)
     };
 }

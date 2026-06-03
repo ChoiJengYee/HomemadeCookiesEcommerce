@@ -1,8 +1,14 @@
 (async function () {
   const user = await window.HomemadeCookieAuth.refreshFromServer();
   if (!user) {
-    const next = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `/login.html?next=${next}`;
+    document.getElementById('dashboard-greeting').textContent =
+      'Browse our cookies as a guest. Login when you are ready to add items to cart and wishlist.';
+
+    const dashboardLinks = document.getElementById('dashboard-links');
+    dashboardLinks.innerHTML = `
+      <a class="dashboard-card-link" href="/index.html">🍪 Browse Cookies</a>
+      <a class="dashboard-card-link" href="/login.html">🔐 Login</a>
+    `;
     return;
   }
 

@@ -46,6 +46,7 @@ CREATE TABLE cookies (
     cookie_id    SERIAL PRIMARY KEY,
     name         VARCHAR(100) NOT NULL,
     description  TEXT,
+    image_url    VARCHAR(500),
     price        DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
     stock        INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
     category_id  INTEGER NOT NULL REFERENCES categories (category_id)

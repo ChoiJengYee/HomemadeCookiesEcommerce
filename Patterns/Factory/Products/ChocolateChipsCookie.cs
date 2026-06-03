@@ -4,5 +4,9 @@ namespace HomemadeCookie.Api.Patterns.Factory.Products;
 
 public class ChocolateChipsCookie : Cookie
 {
-    public ChocolateChipsCookie() => Name = "Chocolate Chip";
+    public ChocolateChipsCookie()
+    {
+        Name = "Chocolate Chip";
+        ImageUrl = "/images/chocolate-chip.jfif";
+    }
 }
