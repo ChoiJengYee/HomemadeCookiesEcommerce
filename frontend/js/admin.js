@@ -1,5 +1,6 @@
 (async function () {
   window.HomemadeCookieAuth.requireAdmin();
+
   const FACTORY_COOKIE_TYPES = {
     Chocolate: [
       { value: 'Chocolate', label: 'Chocolate Chip' },
@@ -9,100 +10,141 @@
       { value: 'Strawberry', label: 'Strawberry' },
       { value: 'Orange', label: 'Orange' }
     ],
-    Oatmeal: [{ value: 'Oatmeal', label: 'Oatmeal Raisin' }],
-    Salty: [{ value: 'PeanutButter', label: 'Peanut Butter' }]
-  };
-
-  const COOKIE_IMAGE_URLS = {
-    Chocolate: '/images/chocolate-chip.jfif',
-    DarkChocolate: '/images/dark-chocolate.jfif',
-    Strawberry: '/images/strawberry.jfif',
-    Orange: '/images/orange-zest.jfif',
-    Oatmeal: '/images/oatmeal-raisin.jpg',
-    PeanutButter: '/images/peanut-butter.jfif'
+    Oatmeal: [
+      { value: 'Oatmeal', label: 'Oatmeal Raisin' }
+    ],
+    Salty: [
+      { value: 'PeanutButter', label: 'Peanut Butter' }
+    ]
   };
 
   const factorySelect = document.getElementById('factoryKey');
   const cookieTypeSelect = document.getElementById('cookieType');
-  const imageUrlInput = document.getElementById('imageUrl');
+  const imageFileInput = document.getElementById('imageFile');
+  const imagePreview = document.getElementById('imagePreview');
+
   const form = document.getElementById('add-cookie-form');
   const resultBox = document.getElementById('result');
+  const categorySelect = document.getElementById('categoryId');
 
+  // -----------------------------
+  // Populate cookie types
+  // -----------------------------
   function populateCookieTypes(factoryKey) {
     const types = FACTORY_COOKIE_TYPES[factoryKey] || FACTORY_COOKIE_TYPES.Chocolate;
+
     cookieTypeSelect.innerHTML = '';
 
-    types.forEach((type) => {
+    types.forEach(type => {
       const option = document.createElement('option');
       option.value = type.value;
       option.textContent = type.label;
       cookieTypeSelect.appendChild(option);
     });
-
-    cookieTypeSelect.disabled = types.length === 0;
-    setImageUrlForType(cookieTypeSelect.value);
-  }
-
-  function setImageUrlForType(cookieType) {
-    const defaultUrl = COOKIE_IMAGE_URLS[cookieType] ?? '/images/cookie-default.svg';
-    imageUrlInput.value = defaultUrl;
-    imageUrlInput.placeholder = defaultUrl;
   }
 
   factorySelect.addEventListener('change', () => {
     populateCookieTypes(factorySelect.value);
   });
 
-  cookieTypeSelect.addEventListener('change', () => {
-    setImageUrlForType(cookieTypeSelect.value);
+  // -----------------------------
+  // Image preview (file only)
+  // -----------------------------
+  imageFileInput.addEventListener('change', () => {
+    const file = imageFileInput.files[0];
+
+    if (!file) {
+      imagePreview.style.display = 'none';
+      imagePreview.src = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      imagePreview.src = e.target.result;
+      imagePreview.style.display = 'block';
+    };
+
+    reader.readAsDataURL(file);
   });
 
+  // -----------------------------
+  // Load categories
+  // -----------------------------
   async function loadCategories() {
     try {
       const categories = await window.HomemadeCookieApi.getAdminCategories();
-      const categorySelect = document.getElementById('categoryId');
-      categorySelect.innerHTML = categories.map((category) => `
-        <option value="${category.categoryId}">${category.name}</option>
-      `).join('');
+
+      categorySelect.innerHTML = categories
+        .map(c => `<option value="${c.categoryId}">${c.name}</option>`)
+        .join('');
     } catch (err) {
       resultBox.hidden = false;
       resultBox.className = 'result error';
-      resultBox.textContent = 'Unable to load categories. Please refresh.';
+      resultBox.textContent = 'Failed to load categories';
     }
   }
 
   await loadCategories();
   populateCookieTypes(factorySelect.value);
 
+  // -----------------------------
+  // Submit form (UPLOAD FILE)
+  // -----------------------------
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    const file = imageFileInput.files[0];
+
+    if (!file) {
+      resultBox.hidden = false;
+      resultBox.className = 'result error';
+      resultBox.textContent = 'Please select an image file';
+      return;
+    }
+
     resultBox.hidden = false;
     resultBox.className = 'result';
-    resultBox.textContent = 'Creating cookie via factory...';
+    resultBox.textContent = 'Uploading image and creating cookie...';
 
-    const payload = {
-      factoryKey: factorySelect.value,
-      cookieType: cookieTypeSelect.value,
-      description: document.getElementById('description').value.trim() || null,
-      imageUrl: document.getElementById('imageUrl').value.trim() || null,
-      price: Number(document.getElementById('price').value),
-      stock: Number(document.getElementById('stock').value),
-      categoryId: Number(document.getElementById('categoryId').value)
-    };
+    const formData = new FormData();
+
+    formData.append('factoryKey', factorySelect.value);
+    formData.append('cookieType', cookieTypeSelect.value);
+    formData.append('description', document.getElementById('description').value || '');
+    formData.append('price', document.getElementById('price').value.toString());
+    formData.append('stock', document.getElementById('stock').value.toString());
+    formData.append('categoryId', categorySelect.value.toString());
+    formData.append('image', file);
 
     try {
-      const result = await window.HomemadeCookieApi.createCookie(payload);
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+
       resultBox.className = 'result success';
       resultBox.innerHTML = `
-        <strong>Cookie added (ID ${result.cookieId})</strong><br>
-        ${result.name} — RM ${Number(result.price).toFixed(2)}, stock ${result.stock}
+        <strong>Cookie created successfully!</strong><br>
+        ID: ${data.cookieId}
       `;
+
       form.reset();
+      imagePreview.style.display = 'none';
+      imagePreview.src = '';
       factorySelect.value = 'Chocolate';
       populateCookieTypes('Chocolate');
-    } catch (error) {
+
+    } catch (err) {
       resultBox.className = 'result error';
-      resultBox.textContent = error.message;
+      resultBox.textContent = err.message;
     }
   });
+
 })();
