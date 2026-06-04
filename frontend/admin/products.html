@@ -70,8 +70,34 @@
         </div>
 
         <div class="form-group">
-          <label for="imageUrl">Image URL</label>
-          <input type="text" id="imageUrl" name="imageUrl" placeholder="/images/chocolate-chip.jfif" required>
+          <label for="imageFile">Upload Cookie Image</label>
+          <input 
+            type="file" 
+            id="imageFile" 
+            name="imageFile" 
+            accept="image/*"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label>Image Preview</label>
+          <img 
+            id="imagePreview" 
+            src="" 
+            alt="Image preview"
+            style="max-width: 220px; display: none; border-radius: 10px; border: 1px solid #ddd; padding: 5px;"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label>Image Preview</label>
+          <img 
+            id="imagePreview" 
+            src="" 
+            alt="Image preview"
+            style="max-width: 220px; display: none; border-radius: 10px; border: 1px solid #ddd; padding: 5px;"
+          >
         </div>
 
         <div class="form-group">
@@ -96,3 +122,4 @@
   <script src="/js/admin.js"></script>
 </body>
 </html>
+
