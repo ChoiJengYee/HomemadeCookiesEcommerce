@@ -166,7 +166,7 @@ public class CookieRepository
 
     private static CookieEntity MapCookie(NpgsqlDataReader reader) => new()
     {
-        Id = reader.GetInt32(0),
+        CookieId = reader.GetInt32(0),
         Name = reader.GetString(1),
         Description = reader.IsDBNull(2) ? null : reader.GetString(2),
         ImageUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
