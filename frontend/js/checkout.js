@@ -46,10 +46,18 @@
     submitBtn.disabled = true;
 
     const payload = {
+      customerId: window.HomemadeCookieApi.getCustomerId(),
       paymentMethod: document.getElementById('paymentMethod').value,
       cardDetails: document.getElementById('cardDetails').value.trim(),
       customerEmail: document.getElementById('customerEmail').value.trim() || null
     };
+
+    if (!payload.customerId) {
+      resultBox.className = 'result error';
+      resultBox.textContent = 'Please log in as a customer before checkout.';
+      submitBtn.disabled = false;
+      return;
+    }
 
     try {
       const result = await window.HomemadeCookieApi.checkout(payload);
