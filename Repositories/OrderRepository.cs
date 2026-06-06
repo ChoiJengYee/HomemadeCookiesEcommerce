@@ -29,6 +29,79 @@ public class OrderRepository
         return orders;
     }
 
+    public async Task<IReadOnlyList<OrderEntity>> GetByCustomerIdAsync(int customerId, CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            SELECT o.order_id, o.customer_id, o.order_date, o.total_amount, o.status_id, s.status_name
+            FROM orders o
+            INNER JOIN order_status_lookup s ON s.status_id = o.status_id
+            WHERE o.customer_id = @customerId
+            ORDER BY o.order_date DESC, o.order_id DESC
+            """;
+
+        await using var connection = DatabaseConnection.Instance.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("customerId", customerId);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        var orders = new List<OrderEntity>();
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            orders.Add(MapOrder(reader));
+        }
+
+        return orders;
+    }
+
+    public async Task<object?> GetAdminOrderDetailsAsync(int orderId, CancellationToken cancellationToken = default)
+    {
+        var order = await GetByIdAsync(orderId, cancellationToken);
+        if (order is null) return null;
+
+        const string customerSql = """
+            SELECT u.name, c.phone_number, c.address
+            FROM orders o
+            INNER JOIN users u ON u.user_id = o.customer_id
+            INNER JOIN customers c ON c.user_id = o.customer_id
+            WHERE o.order_id = @orderId
+            """;
+
+        await using var connection = DatabaseConnection.Instance.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        await using var customerCommand = new NpgsqlCommand(customerSql, connection);
+        customerCommand.Parameters.AddWithValue("orderId", orderId);
+        await using var customerReader = await customerCommand.ExecuteReaderAsync(cancellationToken);
+
+        string customerName = "";
+        string phoneNumber = "";
+        string address = "";
+
+        if (await customerReader.ReadAsync(cancellationToken))
+        {
+            customerName = customerReader.GetString(0);
+            phoneNumber = customerReader.GetString(1);
+            address = customerReader.GetString(2);
+        }
+
+        await customerReader.CloseAsync();
+
+        var items = await GetItemsAsync(orderId, cancellationToken);
+
+        return new
+        {
+            order.OrderId,
+            order.StatusName,
+            order.OrderDate,
+            order.TotalAmount,
+            CustomerName = customerName,
+            PhoneNumber = phoneNumber,
+            Address = address,
+            Items = items
+        };
+    }
+
     public async Task<OrderEntity?> GetByIdAsync(int orderId, CancellationToken cancellationToken = default)
     {
         const string sql = """

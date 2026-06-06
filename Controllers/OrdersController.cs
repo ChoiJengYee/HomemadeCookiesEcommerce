@@ -40,6 +40,14 @@ public class OrdersController : ControllerBase
         };
     }
 
+    [HttpGet("customer/{customerId:int}")]
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Customer")]
+    public async Task<IActionResult> GetCustomerOrders(int customerId, CancellationToken cancellationToken)
+    {
+        var orders = await _orders.GetByCustomerIdAsync(customerId, cancellationToken);
+        return Ok(orders);
+    }
+
     [HttpGet("{id:int}/status")]
     public async Task<IActionResult> GetStatus(int id, CancellationToken cancellationToken)
     {

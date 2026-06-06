@@ -1,41 +1,116 @@
 (function () {
-  const form = document.getElementById('track-form');
-  const orderIdInput = document.getElementById('orderId');
+  const loading = document.getElementById('orders-loading');
+  const errorEl = document.getElementById('orders-error');
+  const listEl = document.getElementById('customer-orders-list');
   const resultBox = document.getElementById('track-result');
   const detailBox = document.getElementById('order-detail');
-  const cancelBtn = document.getElementById('cancel-order-btn');
+  const tabs = document.querySelectorAll('.status-tab');
 
-  const params = new URLSearchParams(window.location.search);
-  const presetId = params.get('orderId') || sessionStorage.getItem('lastOrderId');
-  if (presetId) orderIdInput.value = presetId;
+  let allOrders = [];
+  let selectedFilter = 'All';
 
   function formatMoney(value) {
     return `RM ${Number(value).toFixed(2)}`;
   }
 
-  function renderOrder(data) {
+  function isInProgress(status) {
+    return ['Pending', 'Confirmed', 'Baking', 'Ready'].includes(status);
+  }
+
+  function getFilteredOrders() {
+    if (selectedFilter === 'All') return allOrders;
+    if (selectedFilter === 'InProgress') return allOrders.filter(o => isInProgress(o.statusName));
+    if (selectedFilter === 'Achieved') return allOrders.filter(o => o.statusName === 'Completed');
+    if (selectedFilter === 'Cancelled') return allOrders.filter(o => o.statusName === 'Cancelled');
+    return allOrders;
+  }
+
+  function renderOrderList() {
+    const orders = getFilteredOrders();
+
+    resultBox.hidden = true;
+
+    if (!orders.length) {
+      listEl.innerHTML = '<p class="empty-state">No orders found.</p>';
+      return;
+    }
+
+    listEl.innerHTML = orders.map((o) => `
+      <article class="order-card">
+        <header>
+          <strong>Order #${o.orderId}</strong>
+          <span class="order-status status-${o.statusName.toLowerCase()}">${o.statusName}</span>
+        </header>
+
+        <p>${new Date(o.orderDate).toLocaleString()} · ${formatMoney(o.totalAmount)}</p>
+
+        <button type="button" class="btn-primary btn-track" data-id="${o.orderId}">
+          View order details
+        </button>
+
+        <div id="customer-detail-${o.orderId}" class="inline-order-detail" hidden></div>
+      </article>
+    `).join('');
+
+    listEl.querySelectorAll('.btn-track').forEach((btn) => {
+      btn.addEventListener('click', () => loadStatus(Number(btn.dataset.id)));
+    });
+  }
+
+  function renderOrderDetail(data) {
     const items = data.items || [];
+    const canCancel = data.statusId === 1;
+
+    document.querySelectorAll('.inline-order-detail').forEach(box => {
+      box.hidden = true;
+      box.innerHTML = '';
+    });
+
+    const detailBox = document.getElementById(`customer-detail-${data.orderId}`);
     detailBox.hidden = false;
+
     detailBox.innerHTML = `
-      <h3>Order #${data.orderId}</h3>
-      <p><strong>Status:</strong> ${data.statusName}</p>
-      <p><strong>Placed:</strong> ${new Date(data.orderDate).toLocaleString()}</p>
-      <p><strong>Total:</strong> ${formatMoney(data.totalAmount)}</p>
-      <ul>${items.map((i) => `<li>${i.cookieName} × ${i.quantity} @ ${formatMoney(i.priceAtPurchase)}</li>`).join('')}</ul>
+      <div class="detail-card customer-detail-card">
+        <div class="detail-header">
+          <h3>Order #${data.orderId}</h3>
+          <span class="order-status status-${data.statusName.toLowerCase()}">${data.statusName}</span>
+        </div>
+
+        <p><strong>Placed:</strong> ${new Date(data.orderDate).toLocaleString()}</p>
+        <p><strong>Total:</strong> ${formatMoney(data.totalAmount)}</p>
+
+        <h4>Ordered cookies</h4>
+        <ul class="detail-list">
+          ${items.map((i) => `
+            <li>
+              <span>${i.cookieName}</span>
+              <span>× ${i.quantity}</span>
+              <span>${formatMoney(i.priceAtPurchase)}</span>
+            </li>
+          `).join('')}
+        </ul>
+
+        <button 
+          type="button" 
+          id="cancel-order-btn-${data.orderId}" 
+          class="btn-danger-soft"
+          data-order-id="${data.orderId}"
+          ${canCancel ? '' : 'disabled'}>
+          ${data.statusName === 'Cancelled' ? 'Order cancelled' : canCancel ? 'Cancel order' : 'Cannot cancel now'}
+        </button>
+      </div>
     `;
 
-    cancelBtn.hidden = !data.canCancel;
-    cancelBtn.dataset.orderId = data.orderId;
+    const cancelBtn = document.getElementById(`cancel-order-btn-${data.orderId}`);
+    cancelBtn.addEventListener('click', () => cancelOrder(data.orderId));
   }
 
   async function loadStatus(orderId) {
     resultBox.hidden = true;
-    detailBox.hidden = true;
-    cancelBtn.hidden = true;
 
     try {
       const data = await window.HomemadeCookieApi.getOrderStatus(orderId);
-      renderOrder(data);
+      renderOrderDetail(data);
     } catch (error) {
       resultBox.hidden = false;
       resultBox.className = 'result error';
@@ -43,36 +118,53 @@
     }
   }
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    await loadStatus(Number(orderIdInput.value));
-  });
-
-  cancelBtn.addEventListener('click', async () => {
-    const orderId = Number(cancelBtn.dataset.orderId);
-    if (!orderId) return;
-
+  async function cancelOrder(orderId) {
+    const cancelBtn = document.getElementById(`cancel-order-btn-${orderId}`);
     cancelBtn.disabled = true;
+
     try {
       const result = await window.HomemadeCookieApi.cancelOrder(orderId);
+
       resultBox.hidden = false;
       resultBox.className = 'result success';
       resultBox.textContent = result.message;
+
+      await loadCustomerOrders();
       await loadStatus(orderId);
     } catch (error) {
       resultBox.hidden = false;
       resultBox.className = 'result error';
       resultBox.textContent = error.message;
-    } finally {
-      cancelBtn.disabled = false;
     }
+  }
+
+  async function loadCustomerOrders() {
+    loading.hidden = false;
+    errorEl.hidden = true;
+    listEl.hidden = true;
+
+    try {
+      allOrders = await window.HomemadeCookieApi.getMyOrders();
+      loading.hidden = true;
+      listEl.hidden = false;
+      renderOrderList();
+    } catch (error) {
+      loading.hidden = true;
+      errorEl.hidden = false;
+      errorEl.textContent = error.message;
+    }
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      selectedFilter = tab.dataset.filter;
+      renderOrderList();
+    });
   });
 
-  window.HomemadeCookieApi.getMe().then((data) => {
-    if (!data.authenticated) {
-      window.location.href = '/login.html?next=' + encodeURIComponent(window.location.pathname + window.location.search);
-      return;
-    }
-    if (presetId) loadStatus(Number(presetId));
+  window.HomemadeCookieAuth.requireCustomer().then((user) => {
+    if (user) loadCustomerOrders();
   });
 })();

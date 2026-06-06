@@ -40,6 +40,17 @@ public class AdminController : ControllerBase
         return Ok(orders);
     }
 
+    [HttpGet("orders/{id:int}/details")]
+    public async Task<IActionResult> GetOrderDetails(int id, CancellationToken cancellationToken)
+    {
+        var details = await _orderRepository.GetAdminOrderDetailsAsync(id, cancellationToken);
+
+        if (details is null)
+            return NotFound(new { message = $"Order {id} not found." });
+
+        return Ok(details);
+    }
+
     [HttpPut("orders/{id:int}/advance")]
     public async Task<IActionResult> AdvanceOrder(int id, CancellationToken cancellationToken)
     {

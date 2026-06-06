@@ -32,6 +32,15 @@
   <main class="main-wide">
     <div class="card">
       <span class="pattern-badge">State</span>
+      <div id="order-status-tabs" class="status-tabs">
+        <button class="status-tab active" data-status="All">All</button>
+        <button class="status-tab" data-status="Pending">Pending</button>
+        <button class="status-tab" data-status="Confirmed">Confirmed</button>
+        <button class="status-tab" data-status="Baking">Baking</button>
+        <button class="status-tab" data-status="Ready">Ready</button>
+        <button class="status-tab" data-status="Completed">Completed</button>
+        <button class="status-tab" data-status="Cancelled">Cancelled</button>
+      </div>
       <p id="orders-loading" class="status-text">Loading orders…</p>
       <p id="orders-error" class="status-text error" hidden></p>
       <div id="orders-list" class="orders-list" hidden></div>

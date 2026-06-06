@@ -29,17 +29,20 @@
   <main>
     <div class="card">
       <span class="pattern-badge">State</span>
-      <form id="track-form" class="track-form">
-        <div class="form-group">
-          <label for="orderId">Order ID</label>
-          <input type="number" id="orderId" name="orderId" min="1" placeholder="e.g. 1" required>
-        </div>
-        <button type="submit" class="btn-primary">View status</button>
-      </form>
+      <p id="orders-loading" class="status-text">Loading your orders…</p>
+      <div id="customer-order-tabs" class="status-tabs">
+        <button class="status-tab active" data-filter="All">All</button>
+        <button class="status-tab" data-filter="InProgress">In progress</button>
+        <button class="status-tab" data-filter="Achieved">Achieved</button>
+        <button class="status-tab" data-filter="Cancelled">Cancelled</button>
+      </div>
+
+      <p id="orders-loading" class="status-text">Loading your orders…</p>
+      <p id="orders-error" class="status-text error" hidden></p>
+
+      <div id="customer-orders-list" class="orders-list" hidden></div>
 
       <div id="track-result" class="result" hidden aria-live="polite"></div>
-      <div id="order-detail" class="order-detail" hidden></div>
-      <button type="button" id="cancel-order-btn" class="btn-secondary btn-danger" hidden>Cancel order</button>
     </div>
   </main>
 

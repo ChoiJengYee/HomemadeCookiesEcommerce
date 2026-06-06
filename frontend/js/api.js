@@ -154,6 +154,16 @@ window.HomemadeCookieApi = {
     });
   },
 
+  getMyOrders() {
+    const id = getCustomerId();
+    if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+    return apiRequest(`/orders/customer/${id}`);
+  },
+
+  getAdminOrderDetails(orderId) {
+    return apiRequest(`/admin/orders/${orderId}/details`);
+  },
+
   getOrderStatus(orderId) {
     return apiRequest(`/orders/${orderId}/status`);
   },
