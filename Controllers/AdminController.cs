@@ -178,9 +178,11 @@ public class AdminController : ControllerBase
     // =========================
 
     [HttpPut("cookies/{id:int}")]
+    [RequestSizeLimit(10_000_000)]
     public async Task<IActionResult> UpdateCookie(
         int id,
-        [FromBody] UpdateCookieRequest request,
+        [FromForm] UpdateCookieRequest request,
+        [FromForm] IFormFile? image,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
@@ -189,8 +191,25 @@ public class AdminController : ControllerBase
         if (request.Price < 0 || request.Stock < 0)
             return BadRequest(new { message = "Price and stock must be zero or greater." });
 
-        if (request.CategoryId <= 0)
-            return BadRequest(new { message = "CategoryId must be a positive integer." });
+        string? imageUrl = request.ImageUrl;
+
+        if (image is not null && image.Length > 0)
+        {
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+            if (!Directory.Exists(uploadFolder))
+                Directory.CreateDirectory(uploadFolder);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+            var filePath = Path.Combine(uploadFolder, fileName);
+
+            await using var stream = new FileStream(filePath, FileMode.Create);
+            await image.CopyToAsync(stream, cancellationToken);
+
+            imageUrl = $"/uploads/{fileName}";
+        }
+
+        request.ImageUrl = imageUrl;
 
         var updated = await _cookieRepository.UpdateAsync(id, request, cancellationToken);
         return updated ? NoContent() : NotFound(new { message = $"Cookie {id} not found." });

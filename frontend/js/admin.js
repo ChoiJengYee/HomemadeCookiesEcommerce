@@ -109,13 +109,20 @@
 
     const formData = new FormData();
 
-    formData.append('factoryKey', factorySelect.value);
-    formData.append('cookieType', cookieTypeSelect.value);
-    formData.append('description', document.getElementById('description').value || '');
-    formData.append('price', document.getElementById('price').value.toString());
-    formData.append('stock', document.getElementById('stock').value.toString());
-    formData.append('categoryId', categorySelect.value.toString());
-    formData.append('image', file);
+    formData.append('name', document.getElementById('editCookieName').value.trim());
+    formData.append('description', document.getElementById('editCookieDescription').value.trim());
+    formData.append('price', document.getElementById('editCookiePrice').value);
+    formData.append('stock', document.getElementById('editCookieStock').value);
+    formData.append('categoryId', document.getElementById('editCookieCategoryId').value);
+    formData.append('imageUrl', document.getElementById('editCookieImageUrl').value);
+
+    const imageFile = document.getElementById('editCookieImageFile').files[0];
+
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    await updateCookie(cookieId, formData);
 
     try {
       const response = await fetch('/api/products', {

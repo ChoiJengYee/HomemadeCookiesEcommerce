@@ -1005,3 +1005,76 @@ main code {
     width: 280px !important;
     flex: 0 0 280px !important;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: var(--white);
+  width: 100%;
+  max-width: 460px;
+  max-height: 85vh;
+  border-radius: 18px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  border: none;
+  background: transparent;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--brown-soft);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.modal-actions .btn-primary,
+.modal-actions .btn-secondary {
+  flex: 1;
+}
+
+.modal-discard {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--cream-section);
+  cursor: pointer;
+}
+
+.btn-edit-cookie {
+  background: var(--brown-soft);
+}
+
+.btn-edit-cookie:hover {
+  background: var(--brown-dark);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.edit-image-preview {
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+  display: block;
+}

@@ -179,10 +179,11 @@ window.HomemadeCookieApi = {
     });
   },
 
-  updateCookie(cookieId, payload) {
-    return apiRequest(`/admin/cookies/${cookieId}`, {
+  updateCookie(cookieId, formData) {
+    return fetch(`/api/admin/cookies/${cookieId}`, {
       method: 'PUT',
-      body: JSON.stringify(payload)
+      credentials: 'include',
+      body: formData
     });
   },
 
