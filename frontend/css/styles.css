@@ -865,3 +865,143 @@ main code {
 .status-cancelled {
   color: #b23b3b;
 }
+
+.professional-nav {
+  background: var(--cream-section);
+  padding: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  gap: 0.25rem;
+}
+
+.professional-nav a {
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.professional-nav a:hover,
+.professional-nav a.active {
+  background: var(--orange-light);
+  color: var(--brown-dark);
+}
+
+.dashboard-card {
+  margin-bottom: 2rem;
+}
+
+.dashboard-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.dashboard-card-link {
+  text-decoration: none;
+  background: var(--cream-section);
+  color: var(--brown-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  font-weight: 700;
+}
+
+.dashboard-card-link:hover {
+  background: var(--orange-light);
+  color: var(--brown-dark);
+}
+
+.dashboard-card-link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 135px;
+}
+
+.dashboard-card-link span {
+  font-weight: 800;
+}
+
+.dashboard-card-link small {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dashboard-section {
+  margin-top: 2rem;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: var(--brown-soft);
+}
+
+.section-heading a {
+  color: var(--orange);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.section-heading a:hover {
+  text-decoration: underline;
+}
+
+.section-kicker {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-product-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.dashboard-cookie-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-cookie-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(74, 44, 26, 0.12);
+}
+
+@media (max-width: 768px) {
+  .professional-nav {
+    width: 100%;
+    justify-content: center;
+    border-radius: 18px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+#order-again-grid {
+    display: flex !important;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+#order-again-grid .product-card {
+    width: 280px !important;
+    flex: 0 0 280px !important;
+}

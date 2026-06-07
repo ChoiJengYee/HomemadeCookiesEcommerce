@@ -12,11 +12,14 @@
       <span class="logo-icon" aria-hidden="true">🍪</span>
       Homemade Cookies
     </a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/index.html">Shop</a>
-      <a href="/cart.html">Cart</a>
-      <a href="/track-order.html">Track order</a>
+
+    <nav class="site-nav professional-nav" aria-label="Main">
+      <a href="/index.html">🍪 Shop</a>
+      <a href="/cart.html">🛒 Cart</a>
+      <a href="/wishlist.html">💖 Wishlist</a>
+      <a href="/track-order.html">📦 Track Order</a>
     </nav>
+
     <span id="nav-user" class="nav-user"></span>
   </header>
 
@@ -31,6 +34,34 @@
       <p id="dashboard-greeting">Loading your dashboard…</p>
       <div class="dashboard-summary" id="dashboard-links"></div>
     </div>
+
+    <section class="dashboard-section" id="order-again-section" hidden>
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Previous favourite</span>
+          <h2>Order again</h2>
+        </div>
+        <a href="/track-order.html">View past orders</a>
+      </div>
+
+      <div id="order-again-grid" class="product-grid dashboard-product-grid"></div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Popular choices</span>
+          <h2>Hot cookies</h2>
+        </div>
+        <a href="/index.html">Click to browse more cookie</a>
+      </div>
+
+      <p id="hot-cookies-loading" class="status-text">Loading hot cookies…</p>
+      <p id="hot-cookies-error" class="status-text error" hidden></p>
+      <div id="hot-cookies-grid" class="product-grid dashboard-product-grid"></div>
+    </section>
+
+    <div id="dashboard-message" class="toast" hidden aria-live="polite"></div>
   </main>
 
   <footer class="site-footer">Homemade Cookies · Dashboard</footer>
