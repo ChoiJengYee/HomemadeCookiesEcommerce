@@ -4,7 +4,8 @@
     getMyOrders,
     getOrderStatus,
     addToCart,
-    addToWishlist
+    addToWishlist,
+    getCategories
   } = window.HomemadeCookieApi;
 
   const user = await window.HomemadeCookieAuth.refreshFromServer();
@@ -42,13 +43,19 @@
     }, 3000);
   }
 
+  function getCategoryName(categoryId) {
+    if (Number(categoryId) === 1) return 'Best Seller';
+    if (Number(categoryId) === 2) return 'Recommended';
+    return '';
+  }
+
   function renderCookieCards(products, container, limit = 4) {
     container.innerHTML = products.slice(0, limit).map((p) => {
       const outOfStock = p.stock <= 0;
 
       return `
         <article class="product-card dashboard-cookie-card">
-          <span class="product-card-badge">${escapeHtml(p.categoryName)}</span>
+          <span class="product-card-badge">${escapeHtml(getCategoryName(p.categoryId))}</span>
 
           <img 
             class="product-card-image" 

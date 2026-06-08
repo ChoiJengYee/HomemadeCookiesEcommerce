@@ -114,7 +114,6 @@
     formData.append('price', document.getElementById('editCookiePrice').value);
     formData.append('stock', document.getElementById('editCookieStock').value);
     formData.append('categoryId', document.getElementById('editCookieCategoryId').value);
-    formData.append('imageUrl', document.getElementById('editCookieImageUrl').value);
 
     const imageFile = document.getElementById('editCookieImageFile').files[0];
 

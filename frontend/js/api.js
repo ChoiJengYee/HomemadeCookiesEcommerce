@@ -94,6 +94,10 @@ window.HomemadeCookieApi = {
     return apiRequest(`/products/${id}`);
   },
 
+  async getCategories() {
+    return apiRequest('/admin/categories');
+  },
+
   getCart() {
     const id = getCustomerId();
     if (!id) return Promise.reject(new Error('Please log in as a customer.'));

@@ -4,7 +4,8 @@ const {
   addToCart,
   addToWishlist,
   updateCookie,
-  getAdminCategories
+  getAdminCategories,
+  getCategories
 } = window.HomemadeCookieApi;
 
 const productGridEl = document.getElementById('product-grid');
@@ -24,6 +25,12 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text ?? '';
   return div.innerHTML;
+}
+
+function getCategoryName(categoryId) {
+  if (Number(categoryId) === 1) return 'Best Seller';
+  if (Number(categoryId) === 2) return 'Recommended';
+  return '';
 }
 
 function updateCartBadge(itemCount) {
@@ -58,8 +65,6 @@ function openEditCookieModal(cookie) {
   document.getElementById('editCookiePrice').value = cookie.price;
   document.getElementById('editCookieStock').value = cookie.stock;
   document.getElementById('editCookieCategoryId').value = cookie.categoryId;
-  document.getElementById('editCookieImageUrl').value = cookie.imageUrl || '';
-
   document.getElementById('edit-cookie-modal').hidden = false;
 }
 
@@ -81,7 +86,7 @@ function renderProducts(products) {
   productGridEl.innerHTML = products.map((p) => {
     const outOfStock = p.stock <= 0;
     const description = escapeHtml(p.description || 'Freshly baked homemade cookies.');
-    const category = escapeHtml(p.categoryName || '');
+    const category = escapeHtml(getCategoryName(p.categoryId));
     const imageUrl = escapeHtml(p.imageUrl ?? '/images/cookie-default.svg');
     return `
       <article class="product-card">
@@ -170,7 +175,6 @@ async function openEditCookieModal(cookie) {
   document.getElementById('editCookiePrice').value = cookie.price;
   document.getElementById('editCookieStock').value = cookie.stock;
   document.getElementById('editCookieCategoryId').value = cookie.categoryId;
-  document.getElementById('editCookieImageUrl').value = cookie.imageUrl || '';
   document.getElementById('editImagePreview').src = cookie.imageUrl || '/images/cookie-default.svg';
   document.getElementById('editCookieImageFile').value = '';
 
@@ -186,7 +190,7 @@ async function loadCatalog() {
   catalogErrorEl.hidden = true;
   productGridEl.innerHTML = '';
 
-  try {
+  try {    
     const products = await getProducts();
     catalogLoadingEl.hidden = true;
     renderProducts(products);
@@ -275,8 +279,7 @@ document.getElementById('edit-cookie-form')?.addEventListener('submit', async (e
     description: document.getElementById('editCookieDescription').value,
     price: Number(document.getElementById('editCookiePrice').value),
     stock: Number(document.getElementById('editCookieStock').value),
-    categoryId: Number(document.getElementById('editCookieCategoryId').value),
-    imageUrl: document.getElementById('editCookieImageUrl').value || null
+    categoryId: Number(document.getElementById('editCookieCategoryId').value)
   };
 
   try {
