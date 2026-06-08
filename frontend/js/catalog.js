@@ -177,6 +177,7 @@ async function openEditCookieModal(cookie) {
   document.getElementById('editCookieCategoryId').value = cookie.categoryId;
   document.getElementById('editImagePreview').src = cookie.imageUrl || '/images/cookie-default.svg';
   document.getElementById('editCookieImageFile').value = '';
+  document.getElementById('editCookieCurrentImageUrl').value = cookie.imageUrl || '';
 
   document.getElementById('edit-cookie-modal').hidden = false;
 }
@@ -274,16 +275,25 @@ document.getElementById('edit-cookie-form')?.addEventListener('submit', async (e
 
   const cookieId = Number(document.getElementById('editCookieId').value);
 
-  const payload = {
-    name: document.getElementById('editCookieName').value,
-    description: document.getElementById('editCookieDescription').value,
-    price: Number(document.getElementById('editCookiePrice').value),
-    stock: Number(document.getElementById('editCookieStock').value),
-    categoryId: Number(document.getElementById('editCookieCategoryId').value)
-  };
+  const formData = new FormData();
+
+  formData.append('name', document.getElementById('editCookieName').value);
+  formData.append('description', document.getElementById('editCookieDescription').value);
+  formData.append('price', document.getElementById('editCookiePrice').value);
+  formData.append('stock', document.getElementById('editCookieStock').value);
+  formData.append('categoryId', document.getElementById('editCookieCategoryId').value);
+  formData.append('imageUrl', document.getElementById('editCookieCurrentImageUrl').value);
+
+  const imageFile = document.getElementById('editCookieImageFile')?.files[0];
+
+  if (imageFile) {
+    formData.append('image', imageFile);
+  }
+
+  await updateCookie(cookieId, formData);
 
   try {
-    await updateCookie(cookieId, payload);
+    await updateCookie(cookieId, formData);
     closeEditCookieModal();
     showToast('Cookie updated successfully!');
     await loadCatalog();

@@ -183,12 +183,19 @@ window.HomemadeCookieApi = {
     });
   },
 
-  updateCookie(cookieId, formData) {
-    return fetch(`/api/admin/cookies/${cookieId}`, {
+  async updateCookie(cookieId, formData) {
+    const response = await fetch(`/api/admin/cookies/${cookieId}`, {
       method: 'PUT',
       credentials: 'include',
       body: formData
     });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `Request failed (${response.status})`);
+    }
+
+    return response;
   },
 
   deleteCookie(cookieId) {
