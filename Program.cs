@@ -15,12 +15,13 @@ DatabaseConnection.Instance.Configure(connectionString);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<CookieRepository>();
 builder.Services.AddSingleton<CartRepository>();
+builder.Services.AddSingleton<CategoryRepository>();
+builder.Services.AddSingleton<CookieRepository>();
 builder.Services.AddSingleton<OrderRepository>();
+builder.Services.AddSingleton<ReviewRepository>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<WishlistRepository>();
-builder.Services.AddSingleton<CategoryRepository>();
 
 builder.Services.AddSingleton<InventorySystem>();
 builder.Services.AddSingleton<PaymentGateway>();

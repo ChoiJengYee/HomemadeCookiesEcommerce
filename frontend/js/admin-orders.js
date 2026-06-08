@@ -34,6 +34,7 @@
     try {
       const data = await window.HomemadeCookieApi.getAdminOrderDetails(orderId);
       const box = document.getElementById(`admin-detail-${orderId}`);
+      const reviews = await window.HomemadeCookieApi.getOrderReviews(orderId);
 
       box.hidden = !box.hidden;
 
@@ -71,6 +72,22 @@
           </table>
 
           <p class="total-line"><strong>Total price:</strong> ${formatMoney(data.totalAmount)}</p>
+
+          <h4>Customer reviews</h4>
+          <div class="review-list">
+            ${reviews.length ? reviews.map(r => {
+              const cookieName = r.cookieName || r.cookie_name || 'Unknown cookie';
+              const customerName = r.customerName || r.customer_name || 'Unknown customer';
+
+              return `
+                <div class="admin-review-card">
+                  <p><strong>${cookieName}</strong> — ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</p>
+                  <p>${r.comment || 'No comment provided.'}</p>
+                  <small>By ${customerName} · ${new Date(r.createdAt || r.created_at).toLocaleString()}</small>
+                </div>
+              `;
+            }).join('') : '<p class="empty-state">No review received yet.</p>'}
+          </div>
         </div>
       `;
     } catch (error) {

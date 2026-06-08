@@ -119,11 +119,13 @@ CREATE TABLE payments (
 -- ---------------------------------------------------------------------------
 CREATE TABLE reviews (
     review_id    SERIAL PRIMARY KEY,
+    order_id     INTEGER NOT NULL REFERENCES orders (order_id) ON DELETE CASCADE,
     customer_id  INTEGER NOT NULL REFERENCES customers (user_id),
     cookie_id    INTEGER NOT NULL REFERENCES cookies (cookie_id),
     rating       INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
     comment      TEXT,
-    created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (order_id, customer_id, cookie_id)
 );
 
 -- ---------------------------------------------------------------------------

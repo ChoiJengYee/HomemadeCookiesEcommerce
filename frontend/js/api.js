@@ -224,6 +224,21 @@ window.HomemadeCookieApi = {
     return apiRequest(`/admin/categories/${categoryId}`, { method: 'DELETE' });
   },
 
+  createReview(payload) {
+    return apiRequest('/reviews', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getOrderReviews(orderId) {
+    return apiRequest(`/reviews/order/${orderId}`);
+  },
+
+  getAdminReviews() {
+    return apiRequest('/admin/reviews');
+  },
+
   getAdminUsers() {
     return apiRequest('/admin/users');
   },

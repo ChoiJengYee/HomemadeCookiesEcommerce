@@ -1078,3 +1078,41 @@ main code {
   margin-bottom: 0.75rem;
   display: block;
 }
+
+.review-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #f0dcc9;
+  border-radius: 16px;
+  background: #fffaf5;
+}
+
+.review-box select,
+.review-box textarea {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #e2c8ad;
+  border-radius: 10px;
+  font-family: inherit;
+}
+
+.review-box textarea {
+  resize: vertical;
+}
+
+.admin-review-card {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: #fff7ed;
+  border: 1px solid #f0dcc9;
+}
+
+.admin-review-card p {
+  margin: 0.35rem 0;
+}
+
+.admin-review-card small {
+  color: #8a6a4f;
+}

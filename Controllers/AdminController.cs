@@ -16,17 +16,20 @@ public class AdminController : ControllerBase
     private readonly OrderRepository _orderRepository;
     private readonly CategoryRepository _categoryRepository;
     private readonly UserRepository _userRepository;
+    private readonly ReviewRepository _reviewRepository;
 
     public AdminController(
         CookieRepository cookieRepository,
         OrderRepository orderRepository,
         CategoryRepository categoryRepository,
-        UserRepository userRepository)
+        UserRepository userRepository,
+        ReviewRepository reviewRepository)
     {
         _cookieRepository = cookieRepository;
         _orderRepository = orderRepository;
         _categoryRepository = categoryRepository;
         _userRepository = userRepository;
+        _reviewRepository = reviewRepository;
     }
 
     // =========================
@@ -267,6 +270,17 @@ public class AdminController : ControllerBase
     {
         var deleted = await _categoryRepository.DeleteAsync(id, cancellationToken);
         return deleted ? NoContent() : NotFound(new { message = $"Category {id} not found." });
+    }
+
+    // =========================
+    // REVIEWS
+    // =========================
+    
+    [HttpGet("reviews")]
+    public async Task<IActionResult> GetReviews(CancellationToken cancellationToken)
+    {
+        var reviews = await _reviewRepository.GetAllAsync(cancellationToken);
+        return Ok(reviews);
     }
 
     // =========================

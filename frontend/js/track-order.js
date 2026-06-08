@@ -98,11 +98,50 @@
           ${canCancel ? '' : 'disabled'}>
           ${data.statusName === 'Cancelled' ? 'Order cancelled' : canCancel ? 'Cancel order' : 'Cannot cancel now'}
         </button>
+
+        ${data.statusId === 5 ? `
+          <h4>Write a review</h4>
+
+          ${items.map(i => `
+            <div class="review-box">
+              <p><strong>${i.cookieName}</strong></p>
+
+              <select id="rating-${data.orderId}-${i.cookieId}">
+                <option value="5">★★★★★ 5</option>
+                <option value="4">★★★★ 4</option>
+                <option value="3">★★★ 3</option>
+                <option value="2">★★ 2</option>
+                <option value="1">★ 1</option>
+              </select>
+
+              <textarea 
+                id="comment-${data.orderId}-${i.cookieId}" 
+                placeholder="Write your review..."
+                rows="3"></textarea>
+
+              <button 
+                type="button" 
+                class="btn-primary btn-submit-review"
+                data-order-id="${data.orderId}"
+                data-cookie-id="${i.cookieId}">
+                Submit review
+              </button>
+            </div>
+          `).join('')}
+        ` : ''}
       </div>
     `;
 
     const cancelBtn = document.getElementById(`cancel-order-btn-${data.orderId}`);
     cancelBtn.addEventListener('click', () => cancelOrder(data.orderId));
+
+    detailBox.querySelectorAll('.btn-submit-review').forEach((btn) => {
+      btn.addEventListener('click', () => submitReview(
+        Number(btn.dataset.orderId),
+        Number(btn.dataset.cookieId),
+        btn
+      ));
+    });
   }
 
   async function loadStatus(orderId) {
@@ -152,6 +191,35 @@
       loading.hidden = true;
       errorEl.hidden = false;
       errorEl.textContent = error.message;
+    }
+  }
+
+  async function submitReview(orderId, cookieId, button) {
+    const rating = Number(document.getElementById(`rating-${orderId}-${cookieId}`).value);
+    const comment = document.getElementById(`comment-${orderId}-${cookieId}`).value;
+    const customerId = window.HomemadeCookieApi.getCustomerId();
+
+    button.disabled = true;
+
+    try {
+      const result = await window.HomemadeCookieApi.createReview({
+        orderId,
+        customerId,
+        cookieId,
+        rating,
+        comment
+      });
+
+      resultBox.hidden = false;
+      resultBox.className = 'result success';
+      resultBox.textContent = result.message;
+
+      button.textContent = 'Review submitted';
+    } catch (error) {
+      button.disabled = false;
+      resultBox.hidden = false;
+      resultBox.className = 'result error';
+      resultBox.textContent = error.message;
     }
   }
 
