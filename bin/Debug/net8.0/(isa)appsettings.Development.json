@@ -7,6 +7,6 @@
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Username=postgres;Password=jengyee0220;Database=Demo_Homemade_Cookie"
+    "DefaultConnection": "Host=localhost;Port=5432;Username=isabellesoo;Database=homemade_cookie_db"
   }
 }

@@ -298,11 +298,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
+      "projectUniqueName": "c:\\Users\\user\\Documents\\HomemadeCookiesEcommerce-main (2)\\HomemadeCookiesEcommerce-main\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
       "projectName": "HomemadeCookie.Api",
-      "projectPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
+      "projectPath": "c:\\Users\\user\\Documents\\HomemadeCookiesEcommerce-main (2)\\HomemadeCookiesEcommerce-main\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\obj\\",
+      "outputPath": "c:\\Users\\user\\Documents\\HomemadeCookiesEcommerce-main (2)\\HomemadeCookiesEcommerce-main\\HomemadeCookiesEcommerce\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -384,13 +384,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0."
-    }
-  ]
+  }
 }

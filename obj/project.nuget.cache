@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fht0J4tpQlU=",
+  "dgSpecHash": "ZluHStne/DE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\HomemadeCookiesEcommerce-main (2)\\HomemadeCookiesEcommerce-main\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.0\\microsoft.aspnetcore.openapi.8.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
@@ -15,15 +15,5 @@
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.25\\microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.25\\microsoft.netcore.app.host.win-x64.8.0.25.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }
