@@ -4,6 +4,7 @@ const {
   addToCart,
   addToWishlist,
   updateCookie,
+  deleteCookie,
   getAdminCategories,
   getCategories
 } = window.HomemadeCookieApi;
@@ -103,6 +104,10 @@ function renderProducts(products) {
             <button type="button" class="btn-add btn-edit-cookie" data-cookie-id="${p.cookieId}" data-action="edit-cookie">
               ✏️ Edit Cookie
             </button>
+            <button type="button" class="btn-delete" data-cookie-id="${p.cookieId}" data-action="delete-cookie">
+            🗑️ Delete
+          </button>
+          
           ` : showActions ? `
             <button
               type="button"
@@ -243,6 +248,20 @@ productGridEl.addEventListener('click', async (event) => {
       button.disabled = false;
     }
     return;
+
+    if (action === 'delete-cookie') {
+      const confirmDelete = confirm('Are you sure you want to delete this cookie?');
+      if (!confirmDelete) return;
+    
+      try {
+        await deleteCookie(cookieId);
+        showToast('Cookie deleted successfully!');
+        await loadCatalog();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+      return;
+    }
   }
 
   if (action === 'cart') {
