@@ -212,4 +212,22 @@ public async Task<bool> UpdateRoleAsync(int userId, string role, CancellationTok
     command.Parameters.AddWithValue("role", role);
     return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
 }
+
+public async Task<bool> ResetPasswordDirectAsync(string email, string newPassword, CancellationToken cancellationToken = default)
+    {
+        const string sql = "UPDATE users SET password = @password WHERE email = @email";
+
+        await using var connection = DatabaseConnection.Instance.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new NpgsqlCommand(sql, connection);
+        
+        // Add parameters corresponding to the frontend request properties
+        command.Parameters.AddWithValue("email", email.Trim());
+        command.Parameters.AddWithValue("password", newPassword);
+
+        // Execute query and check if any user rows were updated
+        var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
+        return rowsAffected > 0;
+    }
+    
 }

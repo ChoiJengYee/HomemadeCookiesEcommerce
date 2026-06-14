@@ -53,5 +53,42 @@
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/cart.js"></script>
+  
+  <script>
+    // Check for success message from product-options page
+    (function checkForAddedMessage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const added = urlParams.get('added');
+      const name = urlParams.get('name');
+      
+      if (added === 'true' && name) {
+        const decodedName = decodeURIComponent(name);
+        const messageEl = document.getElementById('cart-message');
+        if (messageEl) {
+          messageEl.textContent = `✓ ${decodedName} added to your cart!`;
+          messageEl.className = 'result success';
+          messageEl.hidden = false;
+          
+          setTimeout(() => {
+            messageEl.hidden = true;
+          }, 4000);
+          
+          // Clean URL
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        }
+      }
+    })();
+    
+  </script>
+  <script>
+  // Debug - Check storage on cart page load
+  (function() {
+    console.log('=== CART PAGE DEBUG ===');
+    console.log('localStorage pendingCustomCart:', localStorage.getItem('pendingCustomCart'));
+    console.log('sessionStorage:', sessionStorage.getItem('customCartItems'));
+    console.log('URL:', window.location.href);
+  })();
+</script>
 </body>
 </html>

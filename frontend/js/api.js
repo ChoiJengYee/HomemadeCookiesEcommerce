@@ -176,15 +176,23 @@ window.HomemadeCookieApi = {
     return apiRequest(`/orders/${orderId}/cancel`, { method: 'POST' });
   },
 
-  createCookie(payload) {
-    return apiRequest('/admin/cookies', {
+  async createCookie(formData) {
+    const response = await fetch(`${API_BASE}/admin/cookies`, {
       method: 'POST',
-      body: JSON.stringify(payload)
+      credentials: 'include',
+      body: formData 
     });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `Request failed (${response.status})`);
+    }
+
+    return response.json();
   },
 
   async updateCookie(cookieId, formData) {
-    const response = await fetch(`/api/admin/cookies/${cookieId}`, {
+    const response = await fetch(`${API_BASE}/admin/cookies/${cookieId}`, {
       method: 'PUT',
       credentials: 'include',
       body: formData

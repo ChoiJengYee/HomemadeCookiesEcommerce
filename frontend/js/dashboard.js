@@ -78,7 +78,7 @@
               data-cookie-id="${p.cookieId}"
               ${outOfStock ? 'disabled' : ''}
             >
-              ${outOfStock ? 'Unavailable' : 'Add to cart'}
+              ${outOfStock ? 'Unavailable' : 'View Options'}
             </button>
 
             <button 
@@ -141,6 +141,7 @@
     }
   }
 
+  // Handle clicks for Add to Cart and Wishlist
   document.addEventListener('click', async (event) => {
     const cartBtn = event.target.closest('.dashboard-add-cart');
     const wishBtn = event.target.closest('.dashboard-add-wish');
@@ -150,22 +151,34 @@
     const button = cartBtn || wishBtn;
     const cookieId = Number(button.dataset.cookieId);
 
-    button.disabled = true;
-
-    try {
-      if (cartBtn) {
-        await addToCart(cookieId, 1);
-        showToast('Added to cart!');
-      }
-
-      if (wishBtn) {
+    // Handle Wishlist (direct add)
+    if (wishBtn) {
+      button.disabled = true;
+      try {
         await addToWishlist(cookieId);
         showToast('Added to wishlist!');
+      } catch (error) {
+        showToast(error.message, true);
+      } finally {
+        button.disabled = false;
       }
-    } catch (error) {
-      showToast(error.message, true);
-    } finally {
-      button.disabled = false;
+      return;
+    }
+
+    // Handle Cart - Redirect to Product Options Page
+    if (cartBtn) {
+      if (!user) {
+        showToast('Please login to continue', true);
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 1500);
+        return;
+      }
+      
+      // Redirect to product options page with cookie ID
+      console.log('Redirecting to product options for cookie ID:', cookieId);
+      window.location.href = `/product-options.html?id=${cookieId}`;
+      return;
     }
   });
 

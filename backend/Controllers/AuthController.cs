@@ -42,6 +42,32 @@ public class AuthController : ControllerBase
         return Ok(new { user = new { user.UserId, user.Name, user.Email, user.Role, user.Address, user.PhoneNumber } });
     }
 
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPasswordDirect([FromBody] ForgotPasswordRequest request, CancellationToken cancellationToken)
+    {
+        // 1. Validate incoming JSON properties
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return BadRequest(new { message = "Email and new password fields are required." });
+        }
+
+        // 2. Check if user email account actually exists
+        if (!await _users.EmailExistsAsync(request.Email.Trim(), cancellationToken))
+        {
+            return BadRequest(new { message = "An account with this email address was not found." });
+        }
+
+        // 3. Execute database query to overwrite database record data directly
+        var isUpdated = await _users.ResetPasswordDirectAsync(request.Email, request.Password, cancellationToken);
+        
+        if (!isUpdated)
+        {
+            return StatusCode(500, new { message = "Failed to update database record." });
+        }
+
+        return Ok(new { message = "Password updated successfully!" });
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {

@@ -59,20 +59,6 @@ function isAdminLoggedIn() {
   return window.HomemadeCookieAuth?.getUser?.()?.role === 'Admin';
 }
 
-function openEditCookieModal(cookie) {
-  document.getElementById('editCookieId').value = cookie.cookieId;
-  document.getElementById('editCookieName').value = cookie.name;
-  document.getElementById('editCookieDescription').value = cookie.description || '';
-  document.getElementById('editCookiePrice').value = cookie.price;
-  document.getElementById('editCookieStock').value = cookie.stock;
-  document.getElementById('editCookieCategoryId').value = cookie.categoryId;
-  document.getElementById('edit-cookie-modal').hidden = false;
-}
-
-function closeEditCookieModal() {
-  document.getElementById('edit-cookie-modal').hidden = true;
-}
-
 function renderProducts(products) {
   currentProducts = products;
   const showAdminActions = isAdminLoggedIn();
@@ -105,9 +91,8 @@ function renderProducts(products) {
               ✏️ Edit Cookie
             </button>
             <button type="button" class="btn-delete" data-cookie-id="${p.cookieId}" data-action="delete-cookie">
-            🗑️ Delete
-          </button>
-          
+              🗑️ Delete
+            </button>
           ` : showActions ? `
             <button
               type="button"
@@ -116,7 +101,7 @@ function renderProducts(products) {
               data-action="cart"
               ${outOfStock ? 'disabled' : ''}
             >
-              ${outOfStock ? 'Unavailable' : 'Add to cart'}
+              ${outOfStock ? 'Unavailable' : 'View Options'}
             </button>
             <button type="button" class="btn-secondary btn-wish" data-cookie-id="${p.cookieId}" data-action="wish">
               ♥ Wishlist
@@ -220,12 +205,29 @@ productGridEl.addEventListener('click', async (event) => {
   const cookieId = Number(button.dataset.cookieId);
   const action = button.dataset.action;
 
+  // Admin Edit Action
   if (action === 'edit-cookie') {
     const cookie = currentProducts.find(p => p.cookieId === cookieId);
     if (cookie) openEditCookieModal(cookie);
     return;
   }
 
+  // Admin Delete Action
+  if (action === 'delete-cookie') {
+    const confirmDelete = confirm('Are you sure you want to delete this cookie?');
+    if (!confirmDelete) return;
+  
+    try {
+      await deleteCookie(cookieId);
+      showToast('Cookie deleted successfully!');
+      await loadCatalog();
+    } catch (err) {
+      showToast(err.message, true);
+    }
+    return;
+  }
+
+  // Customer Wishlist Action
   if (action === 'wish') {
     if (!isCustomerLoggedIn()) {
       const confirmLogin = window.confirm(
@@ -248,39 +250,21 @@ productGridEl.addEventListener('click', async (event) => {
       button.disabled = false;
     }
     return;
-
-    if (action === 'delete-cookie') {
-      const confirmDelete = confirm('Are you sure you want to delete this cookie?');
-      if (!confirmDelete) return;
-    
-      try {
-        await deleteCookie(cookieId);
-        showToast('Cookie deleted successfully!');
-        await loadCatalog();
-      } catch (err) {
-        showToast(err.message, true);
-      }
-      return;
-    }
   }
 
+  // Cart Action - Redirect to Product Options Page
   if (action === 'cart') {
     if (!isCustomerLoggedIn()) {
       redirectLogin();
       return;
     }
-    button.disabled = true;
-    try {
-      await addToCart(cookieId, 1);
-      showToast('Added to cart!');
-      await refreshCartBadge();
-    } catch (err) {
-      showToast(err.message, true);
-    } finally {
-      button.disabled = false;
-    }
+    
+    // Redirect to product options page with cookie ID
+    window.location.href = `/product-options.html?id=${cookieId}`;
+    return;
   }
 
+  // Login Action
   if (action === 'login') {
     redirectLogin();
   }
@@ -308,8 +292,6 @@ document.getElementById('edit-cookie-form')?.addEventListener('submit', async (e
   if (imageFile) {
     formData.append('image', imageFile);
   }
-
-  await updateCookie(cookieId, formData);
 
   try {
     await updateCookie(cookieId, formData);
