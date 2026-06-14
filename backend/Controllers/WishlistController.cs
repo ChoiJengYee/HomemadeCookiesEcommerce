@@ -124,7 +124,7 @@ public class WishlistController : ControllerBase
         var items = await _wishlist.GetItemsAsync(customerId, cancellationToken);
         foreach (var item in items)
         {
-            await _cartRepository.AddItemAsync(customerId, item.CookieId, 1, cancellationToken);
+            await _cartRepository.AddItemAsync(customerId, item.CookieId, 1, null, cancellationToken);
         }
 
         await _wishlist.ClearAsync(customerId, cancellationToken);
@@ -142,7 +142,7 @@ public class WishlistController : ControllerBase
         var items = await _wishlist.GetItemsAsync(customerId, cancellationToken);
         foreach (var item in items)
         {
-            await _cartRepository.AddItemAsync(customerId, item.CookieId, 1, cancellationToken);
+            await _cartRepository.AddItemAsync(customerId, item.CookieId, 1, null, cancellationToken);
         }
 
         await _wishlist.ClearAsync(customerId, cancellationToken);

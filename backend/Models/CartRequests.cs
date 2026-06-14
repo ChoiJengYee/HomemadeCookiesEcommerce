@@ -4,6 +4,7 @@ public class AddCartItemRequest
 {
     public int CookieId { get; set; }
     public int Quantity { get; set; } = 1;
+    public decimal? CustomPrice { get; set; }
 }
 
 public class UpdateCartItemRequest

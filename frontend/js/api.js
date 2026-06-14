@@ -104,12 +104,17 @@ window.HomemadeCookieApi = {
     return apiRequest(`/cart/${id}`);
   },
 
-  addToCart(cookieId, quantity = 1) {
+  addToCart(cookieId, quantity = 1, options = {}) {
     const id = getCustomerId();
     if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+
     return apiRequest(`/cart/${id}/items`, {
       method: 'POST',
-      body: JSON.stringify({ cookieId, quantity })
+      body: JSON.stringify({
+        cookieId,
+        quantity,
+        customPrice: options.customPrice
+      })
     });
   },
 

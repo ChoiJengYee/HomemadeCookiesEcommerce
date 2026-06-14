@@ -103,7 +103,7 @@ async function addToCart() {
             productData.cookieId,
             quantity,
             {
-                customPrice: total,
+                customPrice: total / quantity,
                 packageType: selectedPackage,
                 giftBox: selectedGift,
                 itemDescription: productData.name
@@ -139,4 +139,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .addEventListener("click", addToCart);
 
     loadProduct();
+});
+
+window.addEventListener("pageshow", () => {
+  const btn = document.getElementById("addToCartBtn");
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = "Add to Cart";
+  }
 });

@@ -298,11 +298,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\HomemadeCookie.Api.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
       "projectName": "HomemadeCookie.Api",
-      "projectPath": "c:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\HomemadeCookie.Api.csproj",
+      "projectPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\obj\\",
+      "outputPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"

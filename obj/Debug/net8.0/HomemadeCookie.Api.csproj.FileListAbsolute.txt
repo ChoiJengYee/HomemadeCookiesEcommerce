@@ -156,3 +156,15 @@ C:\Users\user\Downloads\HomemadeCookiesEcommerce-main(1)\obj\Debug\net8.0\refint
 C:\Users\user\Downloads\HomemadeCookiesEcommerce-main(1)\obj\Debug\net8.0\HomemadeCookie.Api.pdb
 C:\Users\user\Downloads\HomemadeCookiesEcommerce-main(1)\obj\Debug\net8.0\HomemadeCookie.Api.genruntimeconfig.cache
 C:\Users\user\Downloads\HomemadeCookiesEcommerce-main(1)\obj\Debug\net8.0\ref\HomemadeCookie.Api.dll
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\backend\Properties\launchSettings.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\frontend\package-lock.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\frontend\package.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\HomemadeCookie.Api.csproj.nuget.dgspec.json
+C:\Users\user\Assignment\HomemadeCookiesEcommerce\bin\Debug\net8.0\HomemadeCookiesEcommerce-main\obj\project.assets.json

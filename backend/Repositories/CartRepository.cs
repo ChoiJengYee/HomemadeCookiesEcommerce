@@ -72,7 +72,7 @@ public class CartRepository
         return items;
     }
 
-    public async Task AddItemAsync(int customerId, int cookieId, int quantity, CancellationToken cancellationToken = default)
+    public async Task AddItemAsync(int customerId, int cookieId, int quantity, decimal? customPrice = null, CancellationToken cancellationToken = default)
     {
         if (quantity <= 0)
             throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be positive.");
@@ -100,7 +100,7 @@ public class CartRepository
         command.Parameters.AddWithValue("cartId", cartId);
         command.Parameters.AddWithValue("cookieId", cookieId);
         command.Parameters.AddWithValue("quantity", quantity);
-        command.Parameters.AddWithValue("unitPrice", cookie.Price);
+        command.Parameters.AddWithValue("unitPrice", customPrice ?? cookie.Price);
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 

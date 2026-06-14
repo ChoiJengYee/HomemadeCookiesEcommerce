@@ -44,7 +44,7 @@ public class CartController : ControllerBase
 
         try
         {
-            await _cartRepository.AddItemAsync(customerId, request.CookieId, request.Quantity, cancellationToken);
+            await _cartRepository.AddItemAsync(customerId, request.CookieId, request.Quantity, request.CustomPrice, cancellationToken);
             var items = await _cartRepository.GetItemsAsync(customerId, cancellationToken);
             return Ok(new
             {
