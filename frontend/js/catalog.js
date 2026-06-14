@@ -5,8 +5,7 @@ const {
   addToWishlist,
   updateCookie,
   deleteCookie,
-  getAdminCategories,
-  getCategories
+  getAdminCategories
 } = window.HomemadeCookieApi;
 
 const productGridEl = document.getElementById('product-grid');
@@ -14,8 +13,11 @@ const catalogLoadingEl = document.getElementById('catalog-loading');
 const catalogErrorEl = document.getElementById('catalog-error');
 const catalogMessageEl = document.getElementById('catalog-message');
 const cartCountEl = document.getElementById('cart-count');
+const cookieSearchEl = document.getElementById('cookie-search');
+const cookieCategoryFilterEl = document.getElementById('cookie-category-filter');
 
 let currentProducts = [];
+let allProducts = [];
 let currentCategories = [];
 
 function formatPrice(amount) {
@@ -29,9 +31,11 @@ function escapeHtml(text) {
 }
 
 function getCategoryName(categoryId) {
-  if (Number(categoryId) === 1) return 'Best Seller';
-  if (Number(categoryId) === 2) return 'Recommended';
-  return '';
+  const category = currentCategories.find(c =>
+    Number(c.categoryId ?? c.id) === Number(categoryId)
+  );
+
+  return category?.name ?? category?.categoryName ?? '';
 }
 
 function updateCartBadge(itemCount) {
@@ -57,6 +61,27 @@ function isCustomerLoggedIn() {
 
 function isAdminLoggedIn() {
   return window.HomemadeCookieAuth?.getUser?.()?.role === 'Admin';
+}
+
+function applyCatalogFilters() {
+  const searchText = cookieSearchEl?.value.trim().toLowerCase() ?? '';
+  const selectedCategory = cookieCategoryFilterEl?.value ?? 'all';
+
+  const filteredProducts = allProducts.filter((product) => {
+    const name = String(product.name ?? '').toLowerCase();
+
+    const matchesSearch =
+      !searchText ||
+      name.includes(searchText);
+
+    const matchesCategory =
+      selectedCategory === 'all' ||
+      Number(product.categoryId) === Number(selectedCategory);
+
+    return matchesSearch && matchesCategory;
+  });
+
+  renderProducts(filteredProducts);
 }
 
 function renderProducts(products) {
@@ -176,15 +201,40 @@ function closeEditCookieModal() {
   document.getElementById('edit-cookie-modal').hidden = true;
 }
 
+function renderCategoryFilter(categories) {
+  if (!cookieCategoryFilterEl) return;
+
+  cookieCategoryFilterEl.innerHTML = '<option value="all">All Categories</option>';
+
+  categories.forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category.categoryId ?? category.id;
+    option.textContent = category.name ?? category.categoryName;
+    cookieCategoryFilterEl.appendChild(option);
+  });
+}
+
 async function loadCatalog() {
   catalogLoadingEl.hidden = false;
   catalogErrorEl.hidden = true;
   productGridEl.innerHTML = '';
 
-  try {    
+  try {
     const products = await getProducts();
+
+    allProducts = products;
+
+    const categories = [
+      { categoryId: 1, name: 'Best Seller' },
+      { categoryId: 2, name: 'Recommended' }
+    ];
+
+    currentCategories = categories;
+    renderCategoryFilter(categories);
+
     catalogLoadingEl.hidden = true;
-    renderProducts(products);
+    applyCatalogFilters();
+
     await refreshCartBadge();
   } catch (err) {
     catalogLoadingEl.hidden = true;
@@ -318,6 +368,9 @@ document.getElementById('editCookieImageFile')?.addEventListener('change', () =>
 
   reader.readAsDataURL(file);
 });
+
+cookieSearchEl?.addEventListener('input', applyCatalogFilters);
+cookieCategoryFilterEl?.addEventListener('change', applyCatalogFilters);
 
 (async function () {
   await loadCatalog();

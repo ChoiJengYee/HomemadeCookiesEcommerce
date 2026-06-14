@@ -37,6 +37,19 @@
   </section>
 
   <main class="main-wide" id="shop">
+    <section class="catalog-tools">
+      <input
+        type="text"
+        id="cookie-search"
+        class="catalog-search"
+        placeholder="Search cookie name..."
+      >
+
+      <select id="cookie-category-filter" class="catalog-filter">
+        <option value="all">All Categories</option>
+      </select>
+    </section>
+
     <p id="catalog-loading" class="status-text">Loading cookies…</p>
     <p id="catalog-error" class="status-text error" hidden></p>
     <div id="product-grid" class="product-grid" aria-live="polite"></div>
