@@ -254,6 +254,50 @@ public class OrderRepository
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<object>> GetCookieSalesAsync(
+        DateTime? startDate,
+        DateTime? endDate,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            SELECT 
+                c.name AS cookie_name,
+                SUM(oi.quantity) AS total_quantity,
+                SUM(oi.quantity * oi.price_at_purchase) AS total_sales
+            FROM order_items oi
+            INNER JOIN orders o ON o.order_id = oi.order_id
+            INNER JOIN cookies c ON c.cookie_id = oi.cookie_id
+            WHERE o.status_id <> 6
+            AND (@startDate IS NULL OR o.order_date >= @startDate)
+            AND (@endDate IS NULL OR o.order_date <= @endDate)
+            GROUP BY c.name
+            ORDER BY total_sales DESC
+            """;
+
+        await using var connection = DatabaseConnection.Instance.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("startDate", startDate.HasValue ? startDate.Value : DBNull.Value);
+        command.Parameters.AddWithValue("endDate", endDate.HasValue ? endDate.Value.Date.AddDays(1).AddTicks(-1) : DBNull.Value);
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        var result = new List<object>();
+
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            result.Add(new
+            {
+                CookieName = reader.GetString(0),
+                TotalQuantity = reader.GetInt32(1),
+                TotalSales = reader.GetDecimal(2)
+            });
+        }
+
+        return result;
+    }
+
     private static OrderEntity MapOrder(NpgsqlDataReader reader) => new()
     {
         OrderId = reader.GetInt32(0),

@@ -1371,3 +1371,68 @@ main code {
 .admin-review-card small {
   color: #8a6a4f;
 }
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-stat-card {
+  background: #fff8ef;
+  border: 1px solid #f1d5b8;
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 0 8px 20px rgba(120, 72, 24, 0.08);
+}
+
+.admin-stat-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #7a4b25;
+}
+
+.admin-stat-card p {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #3d2413;
+}
+
+.dashboard-chart-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.dashboard-date-filter {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-date-filter input {
+  padding: 0.65rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-chart-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

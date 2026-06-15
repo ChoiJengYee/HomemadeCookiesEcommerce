@@ -40,6 +40,46 @@
         <a class="dashboard-card-link" href="/admin/reports.html">📊 View sales reports</a>
       </div>
     </div>
+
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <h3>Total Revenue</h3>
+        <p id="dashboard-total-revenue">RM 0.00</p>
+      </div>
+
+      <div class="admin-stat-card">
+        <h3>Total Cookies Sold</h3>
+        <p id="dashboard-total-quantity">0</p>
+      </div>
+
+      <div class="admin-stat-card">
+        <h3>Best Seller</h3>
+        <p id="dashboard-best-seller">-</p>
+      </div>
+
+      <div class="admin-stat-card">
+        <h3>Cookie Types Sold</h3>
+        <p id="dashboard-cookie-count">0</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="dashboard-chart-header">
+        <div>
+          <h2>Cookie Sales Chart</h2>
+          <p>Total sales of each cookie within selected timeline.</p>
+        </div>
+
+        <div class="dashboard-date-filter">
+          <input type="date" id="sales-start-date">
+          <input type="date" id="sales-end-date">
+          <button id="load-sales-chart" class="btn-primary">Apply</button>
+        </div>
+      </div>
+
+      <canvas id="cookie-sales-chart" height="120"></canvas>
+      <p id="sales-chart-message" class="status-text"></p>
+    </div>
   </main>
 
   <footer class="site-footer">Homemade Cookies · Admin Dashboard</footer>
@@ -49,7 +89,7 @@
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/sidebar.js"></script>
+  <script src="/js/chart.js"></script>
   <script src="/js/admin-dashboard.js"></script>
-  <script src="/js/admin-reports.js"></script>
 </body>
 </html>

@@ -328,4 +328,18 @@ public class AdminController : ControllerBase
         var updated = await _userRepository.UpdateRoleAsync(id, request.Role, cancellationToken);
         return updated ? NoContent() : NotFound(new { message = $"User {id} not found." });
     }
+
+    // =========================
+    // SALES
+    // =========================
+
+    [HttpGet("sales")]
+    public async Task<IActionResult> GetSalesData(
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate,
+        CancellationToken cancellationToken)
+    {
+        var sales = await _orderRepository.GetCookieSalesAsync(startDate, endDate, cancellationToken);
+        return Ok(sales);
+    }
 }
