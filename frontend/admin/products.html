@@ -6,56 +6,59 @@
   <title>Admin — Add Cookie | Homemade Cookies</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
+</head>
 <body>
   <header class="site-header">
-    <a class="logo" href="/index.html">
-      <span class="logo-icon" aria-hidden="true">🍪</span>
-      Homemade Cookies
-    </a>
-    <nav class="site-nav" aria-label="Main">
+    <a class="logo" href="/index.html">🍪 Homemade Cookies</a>
+    <nav class="site-nav">
       <a href="/index.html">Shop</a>
       <a href="/admin/dashboard.html">Dashboard</a>
       <a href="/admin/products.html" class="active">Add Cookie</a>
-      <a href="/admin/orders.html">Manage Orders</a>
+      <a href="/admin/orders.html">Orders</a>
       <a href="/admin/categories.html">Categories</a>
       <a href="/admin/users.html">Users</a>
+      <a href="/admin/reports.html">Reports</a>
     </nav>
-    <span id="nav-user" class="nav-user"></span>
   </header>
 
   <section class="page-hero">
     <h1>Add Cookie Product</h1>
-    <p>Factory Method — ICookieFactory creates catalog items</p>
+    <p>Factory Method Pattern — Create cookies using different factories</p>
   </section>
 
   <main>
     <div class="card">
-      <span class="pattern-badge">Factory Method</span>
-      <h2>New cookie</h2>
-      <p class="hint">ChocolateFactory, FruitFactory, OatmealFactory, and SaltyFactory (class diagram).</p>
+      <span class="pattern-badge">🏭 Factory Method Pattern</span>
+      <h2>Create New Cookie</h2>
 
       <form id="add-cookie-form">
         <div class="form-group">
           <label for="factoryKey">Factory (ICookieFactory)</label>
           <select id="factoryKey" name="factoryKey" required>
-            <option value="Chocolate">ChocolateFactory</option>
-            <option value="Fruit">FruitFactory</option>
-            <option value="Oatmeal">OatmealFactory</option>
-            <option value="Salty">SaltyFactory</option>
+            <option value="Chocolate">🍫 ChocolateFactory</option>
+            <option value="Fruit">🍓 FruitFactory</option>
+            <option value="Oatmeal">🌾 OatmealFactory</option>
+            <option value="Salty">🧂 SaltyFactory</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="cookieType">Cookie type</label>
+          <label for="cookieType">Cookie Type</label>
           <select id="cookieType" name="cookieType" required>
             <option value="Chocolate">Chocolate Chip</option>
             <option value="DarkChocolate">Dark Chocolate</option>
           </select>
         </div>
 
+        <!-- THIS IS THE MISSING NAME FIELD - ADD THIS -->
+        <div class="form-group">
+          <label for="name">Cookie Name</label>
+          <input type="text" id="name" name="name" placeholder="e.g. Chocolate Chip Deluxe" required>
+        </div>
+
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea id="description" name="description" placeholder="e.g. Classic homemade cookies with rich chocolate chips."></textarea>
+          <textarea id="description" name="description" placeholder="Describe your delicious cookie..."></textarea>
         </div>
 
         <div class="form-group">
@@ -64,47 +67,37 @@
         </div>
 
         <div class="form-group">
-          <label for="stock">Stock quantity</label>
+          <label for="stock">Stock Quantity</label>
           <input type="number" id="stock" name="stock" min="0" step="1" value="50" required>
-        </div>
-
-        <div class="form-group">
-          <label for="imageFile">Upload Cookie Image</label>
-          <input 
-            type="file" 
-            id="imageFile" 
-            name="imageFile" 
-            accept="image/*"
-            required
-          >
-        </div>
-        
-        <div class="form-group">
-          <label>Image Preview</label>
-          <img 
-            id="imagePreview" 
-            src="" 
-            alt="Image preview"
-            style="max-width: 220px; display: none; border-radius: 10px; border: 1px solid #ddd; padding: 5px;"
-          >
         </div>
 
         <div class="form-group">
           <label for="categoryId">Category</label>
           <select id="categoryId" name="categoryId" required>
-            <option value="1">Best Seller</option>
-            <option value="2">Recommended</option>
+            <option value="">Loading categories...</option>
           </select>
         </div>
 
-        <button type="submit" class="btn-primary">Create via Factory</button>
+        <div class="form-group">
+          <label for="imageFile">Cookie Image</label>
+          <input type="file" id="imageFile" name="imageFile" accept="image/*" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Image Preview</label>
+          <img id="imagePreview" src="#" alt="Preview" style="max-width: 220px; display: none;">
+        </div>
+
+        <button type="submit" class="btn-primary">✨ Create Cookie</button>
       </form>
 
-      <div id="result" class="result" hidden aria-live="polite"></div>
+      <div id="result" class="result" style="display: none;"></div>
     </div>
   </main>
 
-  <footer class="site-footer">Homemade Cookies · Admin</footer>
+  <footer class="site-footer">
+    <p>Homemade Cookies · Admin Panel</p> <!-- Factory Method Pattern -->
+  </footer>
 
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
@@ -112,4 +105,3 @@
   <script src="/js/admin.js"></script>
 </body>
 </html>
-
