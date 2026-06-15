@@ -11,6 +11,7 @@
   const leaveBtn = document.getElementById('cancel-leave');
   const saveBtn = document.getElementById('cancel-save');
   const continueBtn = document.getElementById('cancel-continue');
+  const pendingOrderId = new URLSearchParams(window.location.search).get('pendingOrderId');
 
   function formatMoney(value) {
     return `RM ${Number(value).toFixed(2)}`;
@@ -26,29 +27,55 @@
   }
 
   async function loadCartPreview() {
+    cartSection.innerHTML = '<p>Loading items...</p>';
+
     try {
+      if (pendingOrderId) {
+        const order = await window.HomemadeCookieApi.getOrderStatus(pendingOrderId);
+        const items = order.items || [];
+
+        if (!items.length) {
+          cartSection.innerHTML = '<p>No items found in this pending order.</p>';
+          return;
+        }
+
+        cartSection.innerHTML = `
+          <ul class="checkout-items">
+            ${items.map(i => `
+              <li>
+                ${i.cookieName} × ${i.quantity} — ${formatMoney(i.priceAtPurchase * i.quantity)}
+              </li>
+            `).join('')}
+          </ul>
+          <p><strong>Total: ${formatMoney(order.totalAmount)}</strong></p>
+        `;
+
+        return;
+      }
+
       const cart = await window.HomemadeCookieApi.getCart();
       const items = cart.items || [];
 
-      if (items.length === 0) {
-        cartSection.innerHTML = '<p class="empty-state">Cart is empty. <a href="/index.html">Add cookies</a> first.</p>';
+      if (!items.length) {
+        cartSection.innerHTML = '<p>Your cart is empty.</p>';
         submitBtn.disabled = true;
         return;
       }
 
-      const total = items.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0);
       cartSection.innerHTML = `
-        <ul class="checkout-line-list">
-          ${items.map((i) => `
-            <li><span>${i.cookieName}</span> × ${i.quantity} — ${formatMoney(i.quantity * i.unitPrice)}</li>
+        <ul class="checkout-items">
+          ${items.map(item => `
+            <li>
+              ${item.cookieName} × ${item.quantity} — ${formatMoney(item.lineTotal ?? item.unitPrice * item.quantity)}
+            </li>
           `).join('')}
         </ul>
-        <p class="checkout-total"><strong>Total: ${formatMoney(total)}</strong></p>
+        <p><strong>Total: ${formatMoney(cart.total)}</strong></p>
       `;
+
       submitBtn.disabled = false;
     } catch (error) {
-      cartSection.innerHTML = `<p class="status-text error">${error.message}</p>`;
-      submitBtn.disabled = true;
+      cartSection.innerHTML = `<p class="error">${error.message}</p>`;
     }
   }
 
@@ -70,7 +97,9 @@
     }
 
     try {
-      const result = await window.HomemadeCookieApi.checkout(payload);
+      const result = pendingOrderId
+        ? await window.HomemadeCookieApi.payPendingOrder(pendingOrderId, payload)
+        : await window.HomemadeCookieApi.checkout(payload);
       const isSuccess = result.success === true;
       const isPending = result.outcome === 'PaymentPending';
 
@@ -121,18 +150,27 @@
       }
     });
 
-    if (!cancelBtn || !cancelPanel || !leaveBtn || !continueBtn) {
+    if (!cancelBtn || !cancelOverlay || !leaveBtn || !continueBtn || !saveBtn) {
       console.error('Cancel checkout elements not found');
       return;
     }
 
     cancelBtn.addEventListener('click', () => {
-      console.log('Cancel checkout clicked');
       cancelOverlay.hidden = false;
+
+      if (pendingOrderId) {
+        saveBtn.hidden = true;
+      } else {
+        saveBtn.hidden = false;
+      }
     });
 
     leaveBtn.addEventListener('click', () => {
-      window.location.href = '/cart.html';
+      if (pendingOrderId) {
+        window.location.href = '/track-order.html';
+      } else {
+        window.location.href = '/cart.html';
+      }
     });
 
     continueBtn.addEventListener('click', () => {

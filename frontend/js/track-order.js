@@ -35,20 +35,22 @@
       return;
     }
 
-    listEl.innerHTML = orders.map((o) => `
+    listEl.innerHTML = orders.map((order) => `
       <article class="order-card">
         <header>
-          <strong>Order #${o.orderId}</strong>
-          <span class="order-status status-${o.statusName.toLowerCase()}">${o.statusName}</span>
+          <strong>Order #${order.orderId}</strong>
+          <span class="order-status status-${order.statusName.toLowerCase()}">
+            ${order.statusId === 1 ? 'Awaiting Payment' : order.statusName}
+          </span>
         </header>
 
-        <p>${new Date(o.orderDate).toLocaleString()} · ${formatMoney(o.totalAmount)}</p>
+        <p>${new Date(order.orderDate).toLocaleString()} · ${formatMoney(order.totalAmount)}</p>
 
-        <button type="button" class="btn-primary btn-track" data-id="${o.orderId}">
+        <button type="button" class="btn-primary btn-track" data-id="${order.orderId}">
           View order details
         </button>
 
-        <div id="customer-detail-${o.orderId}" class="inline-order-detail" hidden></div>
+        <div id="customer-detail-${order.orderId}" class="inline-order-detail" hidden></div>
       </article>
     `).join('');
 
@@ -73,7 +75,9 @@
       <div class="detail-card customer-detail-card">
         <div class="detail-header">
           <h3>Order #${data.orderId}</h3>
-          <span class="order-status status-${data.statusName.toLowerCase()}">${data.statusName}</span>
+          <span class="order-status status-${data.statusName.toLowerCase()}">
+            ${data.statusId === 1 ? 'Awaiting Payment' : data.statusName}
+          </span>
         </div>
 
         <p><strong>Placed:</strong> ${new Date(data.orderDate).toLocaleString()}</p>
@@ -98,6 +102,12 @@
           ${canCancel ? '' : 'disabled'}>
           ${data.statusName === 'Cancelled' ? 'Order cancelled' : canCancel ? 'Cancel order' : 'Cannot cancel now'}
         </button>
+
+        ${data.statusId === 1 ? `
+          <button type="button" class="btn-primary pay-pending-btn" data-id="${data.orderId}">
+            Pay now
+          </button>
+        ` : ''}
 
         ${data.statusId === 5 ? `
           <h4>Write a review</h4>
@@ -141,6 +151,13 @@
         Number(btn.dataset.cookieId),
         btn
       ));
+    });
+
+    document.querySelectorAll('.pay-pending-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const orderId = btn.dataset.id;
+        window.location.href = `/checkout.html?pendingOrderId=${orderId}`;
+      });
     });
   }
 

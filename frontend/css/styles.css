@@ -1492,3 +1492,155 @@ main code {
   flex: 1;
   min-width: 130px;
 }
+
+/* ===== Improved order / checkout buttons ===== */
+
+.btn-primary,
+.btn-secondary,
+.btn-danger-soft,
+.btn-track,
+.btn-advance,
+.pay-pending-btn,
+.btn-submit-review,
+#checkout-submit,
+#checkout-cancel,
+#cancel-save,
+#cancel-leave,
+#cancel-continue {
+  border-radius: 14px;
+  padding: 12px 22px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary,
+#checkout-submit,
+#cancel-save,
+.pay-pending-btn,
+.btn-track,
+.btn-submit-review {
+  background: linear-gradient(135deg, #f5821f, #d95f00);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(217, 95, 0, 0.22);
+}
+
+.btn-primary:hover,
+#checkout-submit:hover,
+#cancel-save:hover,
+.pay-pending-btn:hover,
+.btn-track:hover,
+.btn-submit-review:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(217, 95, 0, 0.32);
+}
+
+.btn-secondary,
+#checkout-cancel,
+#cancel-leave,
+#cancel-continue {
+  background: #fff8f1;
+  color: #5a2f1d;
+  border: 1px solid #e7cdb6;
+}
+
+.btn-secondary:hover,
+#checkout-cancel:hover,
+#cancel-leave:hover,
+#cancel-continue:hover {
+  background: #ffe8d1;
+  transform: translateY(-1px);
+}
+
+.btn-danger-soft {
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #f5b5b5;
+}
+
+.btn-danger-soft:hover {
+  background: #ffdede;
+  transform: translateY(-1px);
+}
+
+button:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger-soft:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Status tabs */
+.status-tab {
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-weight: 700;
+  border: 1px solid #e7cdb6;
+  background: #fffaf5;
+  color: #4a2617;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-tab:hover {
+  background: #ffe8d1;
+  transform: translateY(-1px);
+}
+
+.status-tab.active {
+  background: #f5821f;
+  color: #fff;
+  border-color: #f5821f;
+  box-shadow: 0 8px 18px rgba(245, 130, 31, 0.25);
+}
+
+/* Order action layout */
+.order-actions,
+.admin-order-actions,
+.checkout-actions,
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Make buttons nicer inside order cards */
+.order-card button,
+.detail-card button {
+  min-height: 44px;
+}
+
+/* Checkout submit full width */
+#checkout-submit {
+  width: 100%;
+  margin-top: 18px;
+}
+
+/* Cancel checkout button */
+#checkout-cancel {
+  margin-top: 10px;
+}
+
+/* Popup buttons */
+.modal-actions button {
+  flex: 1;
+  min-width: 130px;
+}
+
+/* Pay now button */
+.pay-pending-btn {
+  margin-left: 10px;
+}
+
+/* Admin advance button when disabled */
+.btn-advance:disabled {
+  background: #eee;
+  color: #8a6f5d;
+  border: 1px solid #d6c4b5;
+}

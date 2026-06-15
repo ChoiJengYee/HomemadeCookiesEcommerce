@@ -112,4 +112,18 @@ public class OrdersController : ControllerBase
 
         return BadRequest(result);
     }
+
+    [HttpPost("{orderId:int}/pay-pending")]
+    public async Task<IActionResult> PayPendingOrder(
+        int orderId,
+        [FromBody] CheckoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _facade.PayPendingOrderAsync(orderId, request, cancellationToken);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
 }

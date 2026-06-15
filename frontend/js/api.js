@@ -212,6 +212,13 @@ window.HomemadeCookieApi = {
     });
   },
 
+  payPendingOrder(orderId, payload) {
+    return apiRequest(`/orders/${orderId}/pay-pending`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
   // ========================
   // ADMIN REPORTS
   // ========================

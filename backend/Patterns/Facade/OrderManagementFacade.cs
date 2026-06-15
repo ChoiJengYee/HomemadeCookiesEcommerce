@@ -188,4 +188,54 @@ public class OrderManagementFacade
             OrderId = orderId
         };
     }
+
+    public async Task<PlaceOrderResult> PayPendingOrderAsync(
+        int orderId,
+        CheckoutRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var order = await _orders.GetByIdAsync(orderId, cancellationToken);
+
+        if (order == null)
+        {
+            return new PlaceOrderResult
+            {
+                Success = false,
+                Outcome = "NotFound",
+                Message = "Order not found."
+            };
+        }
+
+        if (order.StatusId != OrderStatusIds.Pending)
+        {
+            return new PlaceOrderResult
+            {
+                Success = false,
+                Outcome = "InvalidState",
+                Message = "Only pending orders can be paid."
+            };
+        }
+
+        var payment = _payment.ProcessPayment(request.CardDetails, order.TotalAmount);
+
+        if (payment.Outcome != PaymentOutcome.Success)
+        {
+            return new PlaceOrderResult
+            {
+                Success = false,
+                Outcome = payment.Outcome.ToString(),
+                Message = payment.Message
+            };
+        }
+
+        await _orders.UpdateStatusAsync(orderId, OrderStatusIds.Confirmed, cancellationToken);
+
+        return new PlaceOrderResult
+        {
+            Success = true,
+            Outcome = "Paid",
+            Message = "Payment successful. Your order is now confirmed.",
+            OrderId = orderId
+        };
+    }
 }
