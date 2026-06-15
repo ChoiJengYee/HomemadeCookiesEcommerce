@@ -9,11 +9,11 @@
   function renderCategories(categories) {
     list.innerHTML = categories.map((category) => `
       <tr>
-        <td>${category.categoryId}</td>
+        <td>${category.categoryId}${category.id || ''}</td>
         <td>${category.name}</td>
         <td>
-          <button class="btn-secondary" data-action="edit" data-id="${category.categoryId}" data-name="${category.name}">Edit</button>
-          <button class="btn-secondary" data-action="delete" data-id="${category.categoryId}">Delete</button>
+          <button class="btn-secondary" data-action="edit" data-id="${category.categoryId || category.id}" data-name="${category.name}">Edit</button>
+          <button class="btn-secondary" data-action="delete" data-id="${category.categoryId || category.id}">Delete</button>
         </td>
       </tr>
     `).join('');
@@ -21,7 +21,8 @@
 
   async function loadCategories() {
     try {
-      const categories = await window.HomemadeCookieApi.getAdminCategories();
+      // FIXED: Use getCategories() instead of getAdminCategories()
+      const categories = await window.HomemadeCookieApi.getCategories();
       renderCategories(categories);
     } catch (err) {
       result.hidden = false;

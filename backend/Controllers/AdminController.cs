@@ -4,6 +4,12 @@ using HomemadeCookie.Api.Patterns.Factory;
 using HomemadeCookie.Api.Patterns.State;
 using HomemadeCookie.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace HomemadeCookie.Api.Controllers;
 
@@ -33,13 +39,31 @@ public class AdminController : ControllerBase
     }
 
     // =========================
-    // ORDERS
+    // ORDERS (With Server-Side Date Range Filtering)
     // =========================
 
     [HttpGet("orders")]
-    public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOrders(
+        [FromQuery] DateTime? startDate, 
+        [FromQuery] DateTime? endDate, 
+        CancellationToken cancellationToken)
     {
+        // 1. Fetch all orders from your Dapper repository layer
         var orders = await _orderRepository.GetAllAsync(cancellationToken);
+
+        // 2. Perform conditional filtration directly on the collection before serialization
+        if (startDate.HasValue)
+        {
+            orders = orders.Where(o => o.OrderDate >= startDate.Value).ToList();
+        }
+
+        if (endDate.HasValue)
+        {
+            // Set the limit explicitly to the end of the day (23:59:59) to prevent missing transactions
+            var endOfDay = endDate.Value.Date.AddDays(1).AddTicks(-1);
+            orders = orders.Where(o => o.OrderDate <= endOfDay).ToList();
+        }
+
         return Ok(orders);
     }
 
@@ -106,10 +130,6 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = "CategoryId must be a positive integer." });
 
         string? imageUrl = null;
-
-        // =========================
-        // IMAGE UPLOAD
-        // =========================
         var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
 
         if (!Directory.Exists(uploadFolder))
@@ -120,17 +140,17 @@ public class AdminController : ControllerBase
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
             var filePath = Path.Combine(uploadFolder, fileName);
 
-            await using var stream = new FileStream(filePath, FileMode.Create);
-            await image.CopyToAsync(stream, cancellationToken);
+            // Using structured scoping to flush streaming locks immediately
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream, cancellationToken);
+            }
 
             imageUrl = $"/uploads/{fileName}";
         }
 
         try
         {
-            // =========================
-            // FACTORY CREATION
-            // =========================
             var factory = CookieFactoryProvider.GetFactory(request.FactoryKey);
             var cookie = factory.CreateCookie(request.CookieType);
 
@@ -140,9 +160,6 @@ public class AdminController : ControllerBase
             cookie.CategoryId = request.CategoryId;
             cookie.ImageUrl = imageUrl;
 
-            // =========================
-            // MAP TO ENTITY
-            // =========================
             var entity = new CookieEntity
             {
                 Name = cookie.Name,
@@ -206,8 +223,10 @@ public class AdminController : ControllerBase
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
             var filePath = Path.Combine(uploadFolder, fileName);
 
-            await using var stream = new FileStream(filePath, FileMode.Create);
-            await image.CopyToAsync(stream, cancellationToken);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream, cancellationToken);
+            }
 
             imageUrl = $"/uploads/{fileName}";
         }

@@ -8,6 +8,7 @@ function normalizeProducts(data) {
 
 async function apiRequest(path, options = {}) {
   const url = `${API_BASE}${path}`;
+
   const response = await fetch(url, {
     credentials: 'include',
     headers: {
@@ -18,6 +19,7 @@ async function apiRequest(path, options = {}) {
   });
 
   const text = await response.text();
+
   let data = null;
   if (text) {
     try {
@@ -46,9 +48,17 @@ function resolveWishlistPath(customerId, suffix = '') {
 }
 
 window.HomemadeCookieApi = {
+
+  // ========================
+  // CORE UTIL
+  // ========================
   normalizeProducts,
+  apiRequest,
   getCustomerId,
 
+  // ========================
+  // AUTH
+  // ========================
   getMe() {
     return apiRequest('/auth/me');
   },
@@ -57,7 +67,7 @@ window.HomemadeCookieApi = {
     return apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password })
-    }).then((data) => data.user);
+    }).then(r => r.user);
   },
 
   logout() {
@@ -68,14 +78,14 @@ window.HomemadeCookieApi = {
     return apiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(payload)
-    }).then((data) => data.user);
+    }).then(r => r.user);
   },
 
   updateProfile(payload) {
     return apiRequest('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(payload)
-    }).then((data) => data.user);
+    }).then(r => r.user);
   },
 
   forgotPassword(payload) {
@@ -85,6 +95,9 @@ window.HomemadeCookieApi = {
     });
   },
 
+  // ========================
+  // PRODUCTS
+  // ========================
   async getProducts() {
     const data = await apiRequest('/products');
     return normalizeProducts(data);
@@ -94,10 +107,9 @@ window.HomemadeCookieApi = {
     return apiRequest(`/products/${id}`);
   },
 
-  async getCategories() {
-    return apiRequest('/admin/categories');
-  },
-
+  // ========================
+  // CART
+  // ========================
   getCart() {
     const id = getCustomerId();
     if (!id) return Promise.reject(new Error('Please log in as a customer.'));
@@ -121,6 +133,7 @@ window.HomemadeCookieApi = {
   updateCartItem(cookieId, quantity) {
     const id = getCustomerId();
     if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+
     return apiRequest(`/cart/${id}/items/${cookieId}`, {
       method: 'PUT',
       body: JSON.stringify({ quantity })
@@ -130,9 +143,15 @@ window.HomemadeCookieApi = {
   removeFromCart(cookieId) {
     const id = getCustomerId();
     if (!id) return Promise.reject(new Error('Please log in as a customer.'));
-    return apiRequest(`/cart/${id}/items/${cookieId}`, { method: 'DELETE' });
+
+    return apiRequest(`/cart/${id}/items/${cookieId}`, {
+      method: 'DELETE'
+    });
   },
 
+  // ========================
+  // WISHLIST
+  // ========================
   getWishlist() {
     const id = getCustomerId();
     return apiRequest(resolveWishlistPath(id));
@@ -148,14 +167,21 @@ window.HomemadeCookieApi = {
 
   removeFromWishlist(cookieId) {
     const id = getCustomerId();
-    return apiRequest(resolveWishlistPath(id, `/items/${cookieId}`), { method: 'DELETE' });
+    return apiRequest(resolveWishlistPath(id, `/items/${cookieId}`), {
+      method: 'DELETE'
+    });
   },
 
   moveWishlistToCart() {
     const id = getCustomerId();
-    return apiRequest(resolveWishlistPath(id, '/move-to-cart'), { method: 'POST' });
+    return apiRequest(resolveWishlistPath(id, '/move-to-cart'), {
+      method: 'POST'
+    });
   },
 
+  // ========================
+  // ORDERS (CUSTOMER)
+  // ========================
   checkout(payload) {
     return apiRequest('/orders/checkout', {
       method: 'POST',
@@ -169,54 +195,70 @@ window.HomemadeCookieApi = {
     return apiRequest(`/orders/customer/${id}`);
   },
 
-  getAdminOrderDetails(orderId) {
-    return apiRequest(`/admin/orders/${orderId}/details`);
-  },
-
   getOrderStatus(orderId) {
     return apiRequest(`/orders/${orderId}/status`);
   },
 
   cancelOrder(orderId) {
-    return apiRequest(`/orders/${orderId}/cancel`, { method: 'POST' });
-  },
-
-  async createCookie(formData) {
-    const response = await fetch(`${API_BASE}/admin/cookies`, {
-      method: 'POST',
-      credentials: 'include',
-      body: formData 
+    return apiRequest(`/orders/${orderId}/cancel`, {
+      method: 'POST'
     });
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(text || `Request failed (${response.status})`);
-    }
-
-    return response.json();
   },
 
-  async updateCookie(cookieId, formData) {
-    const response = await fetch(`${API_BASE}/admin/cookies/${cookieId}`, {
-      method: 'PUT',
-      credentials: 'include',
-      body: formData
+  // ========================
+  // ADMIN REPORTS
+  // ========================
+  getAdminOrders(startDate, endDate) {
+    let url = '/admin/orders';
+
+    const params = new URLSearchParams();
+
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+
+    const query = params.toString();
+    if (query) url += `?${query}`;
+
+    return apiRequest(url);
+  },
+
+  getAdminOrderDetails(orderId) {
+    return apiRequest(`/admin/orders/${orderId}/details`);
+  },
+
+  advanceOrder(orderId) {
+    return apiRequest(`/admin/orders/${orderId}/advance`, {
+      method: 'PUT'
     });
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(text || `Request failed (${response.status})`);
-    }
-
-    return response;
   },
 
-  deleteCookie(cookieId) {
-    return apiRequest(`/admin/cookies/${cookieId}`, { method: 'DELETE' });
+  // ========================
+  // ADMIN DASHBOARD STATS
+  // ========================
+  getAdminStats() {
+    return apiRequest('/admin/dashboard/stats');
   },
 
-  getAdminCategories() {
+  getAdminSalesData(startDate, endDate) {
+    let url = '/admin/sales';
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    const query = params.toString();
+    if (query) url += `?${query}`;
+    return apiRequest(url);
+  },
+
+  // ========================
+  // CATEGORIES (Admin)
+  // ========================
+  getCategories() {
     return apiRequest('/admin/categories');
+  },
+
+  // Alias for getCategories - use this for consistency
+  getAdminCategories() {
+    return this.getCategories();
   },
 
   createCategory(payload) {
@@ -226,17 +268,94 @@ window.HomemadeCookieApi = {
     });
   },
 
-  updateCategory(categoryId, payload) {
-    return apiRequest(`/admin/categories/${categoryId}`, {
+  // Alias for createCategory
+  createAdminCategory(payload) {
+    return this.createCategory(payload);
+  },
+
+  updateCategory(id, payload) {
+    return apiRequest(`/admin/categories/${id}`, {
       method: 'PUT',
       body: JSON.stringify(payload)
     });
   },
 
-  deleteCategory(categoryId) {
-    return apiRequest(`/admin/categories/${categoryId}`, { method: 'DELETE' });
+  // Alias for updateCategory
+  updateAdminCategory(id, payload) {
+    return this.updateCategory(id, payload);
   },
 
+  deleteCategory(id) {
+    return apiRequest(`/admin/categories/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // Alias for deleteCategory
+  deleteAdminCategory(id) {
+    return this.deleteCategory(id);
+  },
+
+  // ========================
+  // COOKIES / PRODUCTS (Admin)
+  // ========================
+  async createCookie(formData) {
+    const res = await fetch(`${API_BASE}/admin/cookies`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  },
+
+  async updateCookie(cookieId, formData) {
+    const res = await fetch(`${API_BASE}/admin/cookies/${cookieId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      body: formData
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  },
+
+  deleteCookie(cookieId) {
+    return apiRequest(`/admin/cookies/${cookieId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // Get all products (admin view)
+  getAdminProducts() {
+    return apiRequest('/admin/products');
+  },
+
+  // Get single product for admin
+  getAdminProduct(id) {
+    return apiRequest(`/admin/products/${id}`);
+  },
+
+  // Create product with JSON (if needed)
+  createAdminProduct(payload) {
+    return apiRequest('/admin/products', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // Update product with JSON (if needed)
+  updateAdminProduct(id, payload) {
+    return apiRequest(`/admin/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // ========================
+  // REVIEWS (Admin)
+  // ========================
   createReview(payload) {
     return apiRequest('/reviews', {
       method: 'POST',
@@ -244,16 +363,25 @@ window.HomemadeCookieApi = {
     });
   },
 
-  getOrderReviews(orderId) {
-    return apiRequest(`/reviews/order/${orderId}`);
-  },
-
   getAdminReviews() {
     return apiRequest('/admin/reviews');
   },
 
+  deleteAdminReview(reviewId) {
+    return apiRequest(`/admin/reviews/${reviewId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // ========================
+  // USERS (Admin)
+  // ========================
   getAdminUsers() {
     return apiRequest('/admin/users');
+  },
+
+  getUserById(userId) {
+    return apiRequest(`/admin/users/${userId}`);
   },
 
   updateUserRole(userId, payload) {
@@ -263,11 +391,57 @@ window.HomemadeCookieApi = {
     });
   },
 
-  getAdminOrders() {
-    return apiRequest('/admin/orders');
+  updateUserStatus(userId, payload) {
+    return apiRequest(`/admin/users/${userId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
   },
 
-  advanceOrder(orderId) {
-    return apiRequest(`/admin/orders/${orderId}/advance`, { method: 'PUT' });
+  deleteAdminUser(userId) {
+    return apiRequest(`/admin/users/${userId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // ========================
+  // DISCOUNTS / PROMOTIONS (Admin)
+  // ========================
+  getAdminDiscounts() {
+    return apiRequest('/admin/discounts');
+  },
+
+  createDiscount(payload) {
+    return apiRequest('/admin/discounts', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateDiscount(id, payload) {
+    return apiRequest(`/admin/discounts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  deleteDiscount(id) {
+    return apiRequest(`/admin/discounts/${id}`, {
+      method: 'DELETE'
+    });
+  },
+
+  // ========================
+  // SETTINGS (Admin)
+  // ========================
+  getAdminSettings() {
+    return apiRequest('/admin/settings');
+  },
+
+  updateAdminSettings(payload) {
+    return apiRequest('/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
   }
 };

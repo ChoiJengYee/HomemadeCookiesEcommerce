@@ -122,19 +122,20 @@
   // Auth guards (IMPORTANT FIX)
   // -----------------------------
   async function requireRole(role, redirectTo = '/login.html') {
-    const user = currentUser; // NO auto refresh (fixes instability)
+  const user = currentUser;
 
-    if (!user || normalizeRole(user.role) !== normalizeRole(role)) {
-      const next = encodeURIComponent(
-        window.location.pathname + window.location.search
-      );
+  if (!user || normalizeRole(user.role) !== normalizeRole(role)) {
 
-      window.location.href = `${redirectTo}?next=${next}`;
-      return null;
-    }
+    const path = window.location.pathname + window.location.search;
 
-    return user;
+    const next = encodeURIComponent(path);
+
+    window.location.href = `${redirectTo}?next=${next}`;
+    return null;
   }
+
+  return user;
+}
 
   async function requireCustomer() {
     return requireRole('customer');

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Sales Report | Homemade Cookies</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/index.html">
+      <span class="logo-icon" aria-hidden="true">🍪</span>
+      Homemade Cookies
+    </a>
+  </header>
+
+  <section class="page-hero">
+    <h1>Sales Analytics & Reporting</h1>
+    <p>Fetch your store analytics data rows and download summaries directly to your PC</p>
+  </section>
+
+  <main>
+    <div class="card">
+      <h2>Select Date Range</h2>
+      <form id="report-filter-form" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px;">
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate" required>
+        </div>
+        <button type="button" id="btn-fetch-report" class="btn-primary" style="height: 42px;">Fetch Report</button>
+      </form>
+
+      <div id="result" class="result" hidden aria-live="polite"></div>
+
+      <div id="export-controls" style="display: none; flex-direction: column; gap: 10px; margin-bottom: 25px; padding: 15px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
+        <p style="margin: 0 0 5px 0; font-weight: bold; color: #333;">Choose report download format:</p>
+        <div style="display: flex; gap: 10px;">
+          <button id="btn-export-pdf" class="btn-primary" style="background-color: #e74c3c; border-color: #e74c3c;">Save as PDF 📄</button>
+          <button id="btn-export-csv" class="btn-primary" style="background-color: #27ae60; border-color: #27ae60;">Save as CSV 📊</button>
+        </div>
+      </div>
+
+      <div id="report-preview-container" style="display: none; overflow-x: auto;">
+        <h3 style="margin-bottom: 15px;">Data Preview Sheet</h3>
+        <table class="orders-table" style="width:100%; border-collapse: collapse; min-width: 700px;">
+          <thead>
+            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #ddd; text-align: left;">
+              <th style="padding: 12px 10px;">Order ID</th>
+              <th style="padding: 12px 10px;">Date</th>
+              <th style="padding: 12px 10px;">Customer Email</th>
+              <th style="padding: 12px 10px;">Items Description</th>
+              <th style="padding: 12px 10px;">Total Price</th>
+            </tr>
+          </thead>
+          <tbody id="report-table-body"></tbody>
+          <tfoot>
+            <tr style="font-weight: bold; background-color: #f1f2f6; border-top: 2px solid #aaa;">
+              <td colspan="4" style="padding: 12px; text-align: right; font-size: 1.1em;">Total Revenue Summary:</td>
+              <td id="report-gross-sum" style="padding: 12px; font-size: 1.1em; color: #27ae60;">$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </main>
+  <script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/admin-reports.js"></script>
+  <script src="/js/sidebar.js"></script>
+</body>
+</html>
