@@ -1436,3 +1436,15 @@ main code {
     grid-template-columns: 1fr;
   }
 }
+
+.dashboard-date-filter select {
+  padding: 0.65rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+}
+
+#chart-container {
+    height: 350px;
+    position: relative;
+}

@@ -5,6 +5,7 @@
   const startDateInput = document.getElementById("sales-start-date");
   const endDateInput = document.getElementById("sales-end-date");
   const loadBtn = document.getElementById("load-sales-chart");
+  const chartStyleSelect = document.getElementById("chart-style-select");
   const messageEl = document.getElementById("sales-chart-message");
 
   const revenueEl = document.getElementById("dashboard-total-revenue");
@@ -47,35 +48,69 @@
       bestSellerEl.textContent = bestSeller;
       cookieCountEl.textContent = salesData.length;
 
-      const ctx = document.getElementById("cookie-sales-chart");
+      const canvas = document.getElementById("cookie-sales-chart");
+      const ctx = canvas.getContext("2d");
+
+      const selectedChart = chartStyleSelect.value;
 
       if (salesChart) {
         salesChart.destroy();
       }
 
-      salesChart = new Chart(ctx, {
-        type: "bar",
+      const cookieColors = [
+        "#c97c37",
+        "#f6b94b",
+        "#8b4513",
+        "#d2691e",
+        "#f4a460",
+        "#a0522d",
+        "#deb887"
+      ];
+
+      let chartType = selectedChart === "pie" ? "pie" : "bar";
+
+      let datasetConfig = {
+        label: "Total Sales (RM)",
+        data: sales,
+        backgroundColor: cookieColors
+      };
+
+      if (chartType === "bar") {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, "#c97c37");
+        gradient.addColorStop(1, "#f6d365");
+
+        datasetConfig.backgroundColor = gradient;
+      }
+
+      if (chartType === "pie") {
+          datasetConfig.radius = "100%";
+      }
+
+      salesChart = new Chart(canvas, {
+        type: chartType,
         data: {
           labels,
-          datasets: [
-            {
-              label: "Total Sales (RM)",
-              data: sales
-            }
-          ]
+          datasets: [datasetConfig]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 1200
+          },
           plugins: {
             legend: {
-              display: true
+              display: chartType === "pie"
             }
           },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
+          scales: chartType === "bar"
+            ? {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            : {}
         }
       });
 

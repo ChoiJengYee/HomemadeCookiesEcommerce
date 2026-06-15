@@ -73,11 +73,19 @@
         <div class="dashboard-date-filter">
           <input type="date" id="sales-start-date">
           <input type="date" id="sales-end-date">
+
+          <select id="chart-style-select">
+            <option value="bar">Bar Chart</option>
+            <option value="pie">Pie Chart</option>
+          </select>
+
           <button id="load-sales-chart" class="btn-primary">Apply</button>
         </div>
       </div>
 
-      <canvas id="cookie-sales-chart" height="120"></canvas>
+      <div id="chart-container">
+        <canvas id="cookie-sales-chart"></canvas>
+      </div>
       <p id="sales-chart-message" class="status-text"></p>
     </div>
   </main>
