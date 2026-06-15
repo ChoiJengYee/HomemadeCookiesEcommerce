@@ -96,4 +96,20 @@ public class OrdersController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpPost("save-pending")]
+    public async Task<IActionResult> SavePendingOrder(
+        [FromBody] CheckoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (request.CustomerId <= 0)
+            return BadRequest(new { message = "CustomerId is required." });
+
+        var result = await _facade.SavePendingOrderAsync(request, cancellationToken);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
 }

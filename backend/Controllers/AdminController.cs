@@ -89,6 +89,11 @@ public class AdminController : ControllerBase
 
         try
         {
+            if (order.StatusId == OrderStatusIds.Pending)
+            {
+                return BadRequest(new { message = "Cannot advance order because payment is still pending." });
+            }
+            
             context.Proceed();
             await _orderRepository.UpdateStatusAsync(order.OrderId, context.StatusId, cancellationToken);
 

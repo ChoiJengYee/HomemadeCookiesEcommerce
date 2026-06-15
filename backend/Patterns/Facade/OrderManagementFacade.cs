@@ -108,7 +108,7 @@ public class OrderManagementFacade
             request.CustomerId,
             lines,
             total,
-            OrderStatusIds.Pending,
+            OrderStatusIds.Confirmed,
             request.PaymentMethod,
             "Paid",
             cancellationToken);
@@ -141,5 +141,51 @@ public class OrderManagementFacade
         var orderId = await _orders.CreateOrderAsync(customerId, total, statusId, orderLines, cancellationToken);
         await _orders.CreatePaymentAsync(orderId, paymentMethod, total, paymentStatus, cancellationToken);
         return orderId;
+    }
+
+    public async Task<PlaceOrderResult> SavePendingOrderAsync(
+        CheckoutRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var lines = (await _cart.GetItemsAsync(request.CustomerId, cancellationToken))
+            .Select(i => new CartLine
+            {
+                CookieId = i.CookieId,
+                CookieName = i.CookieName,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice
+            })
+            .ToList();
+
+        if (lines.Count == 0)
+        {
+            return new PlaceOrderResult
+            {
+                Success = false,
+                Outcome = "EmptyCart",
+                Message = "Your cart is empty."
+            };
+        }
+
+        var total = lines.Sum(l => l.UnitPrice * l.Quantity);
+
+        var orderId = await SaveOrderAsync(
+            request.CustomerId,
+            lines,
+            total,
+            OrderStatusIds.Pending,
+            request.PaymentMethod,
+            "AwaitingPayment",
+            cancellationToken);
+
+        await _cart.ClearAsync(request.CustomerId, cancellationToken);
+
+        return new PlaceOrderResult
+        {
+            Success = true,
+            Outcome = "SavedPendingOrder",
+            Message = "Order saved as pending. You can pay or cancel it later.",
+            OrderId = orderId
+        };
     }
 }

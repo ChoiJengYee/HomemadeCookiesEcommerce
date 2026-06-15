@@ -52,8 +52,24 @@
           <label for="customerEmail">Email (optional)</label>
           <input type="email" id="customerEmail" name="customerEmail" placeholder="customer@homemadecookies.com">
         </div>
-        <button type="submit" class="btn-primary" id="checkout-submit">Place order</button>
+        <div class="checkout-actions">
+          <button type="submit" class="btn-primary" id="checkout-submit">Place order</button>
+          <button type="button" class="btn-secondary" id="checkout-cancel">Cancel checkout</button>
+        </div>
       </form>
+
+      <div id="checkout-cancel-overlay" class="modal-overlay" hidden>
+        <div id="checkout-cancel-panel" class="cancel-modal">
+          <h3>Are you sure to cancel checkout?</h3>
+          <p>You can leave, save this cart as a pending order, or continue checkout.</p>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancel-leave">Leave</button>
+            <button type="button" class="btn-primary" id="cancel-save">Save as order</button>
+            <button type="button" class="btn-secondary" id="cancel-continue">Continue checkout</button>
+          </div>
+        </div>
+      </div>
 
       <div id="checkout-result" class="result" hidden aria-live="polite"></div>
       <p id="checkout-track" class="hint" hidden>

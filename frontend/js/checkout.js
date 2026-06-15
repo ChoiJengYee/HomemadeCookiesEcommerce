@@ -6,8 +6,23 @@
   const trackLink = document.getElementById('track-order-link');
   const submitBtn = document.getElementById('checkout-submit');
 
+  const cancelBtn = document.getElementById('checkout-cancel');
+  const cancelPanel = document.getElementById('checkout-cancel-panel');
+  const leaveBtn = document.getElementById('cancel-leave');
+  const saveBtn = document.getElementById('cancel-save');
+  const continueBtn = document.getElementById('cancel-continue');
+
   function formatMoney(value) {
     return `RM ${Number(value).toFixed(2)}`;
+  }
+
+  function buildCheckoutPayload() {
+    return {
+      customerId: window.HomemadeCookieApi.getCustomerId(),
+      paymentMethod: document.getElementById('paymentMethod').value,
+      cardDetails: document.getElementById('cardDetails').value.trim(),
+      customerEmail: document.getElementById('customerEmail').value.trim() || null
+    };
   }
 
   async function loadCartPreview() {
@@ -45,12 +60,7 @@
     trackHint.hidden = true;
     submitBtn.disabled = true;
 
-    const payload = {
-      customerId: window.HomemadeCookieApi.getCustomerId(),
-      paymentMethod: document.getElementById('paymentMethod').value,
-      cardDetails: document.getElementById('cardDetails').value.trim(),
-      customerEmail: document.getElementById('customerEmail').value.trim() || null
-    };
+    const payload = buildCheckoutPayload();
 
     if (!payload.customerId) {
       resultBox.className = 'result error';
@@ -81,6 +91,53 @@
     } finally {
       submitBtn.disabled = false;
     }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const cancelBtn = document.getElementById('checkout-cancel');
+    const cancelOverlay = document.getElementById('checkout-cancel-overlay');
+    const leaveBtn = document.getElementById('cancel-leave');
+    const continueBtn = document.getElementById('cancel-continue');
+    const saveBtn = document.getElementById('cancel-save');
+
+    saveBtn.addEventListener('click', async () => {
+      const payload = buildCheckoutPayload();
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        const result = await window.HomemadeCookieApi.savePendingOrder(payload);
+
+        alert(result.message || 'Order saved as pending.');
+
+        window.location.href = '/track-order.html?status=Pending';
+      } catch (error) {
+        console.error(error);
+        alert(error.message || 'Failed to save pending order.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save as order';
+      }
+    });
+
+    if (!cancelBtn || !cancelPanel || !leaveBtn || !continueBtn) {
+      console.error('Cancel checkout elements not found');
+      return;
+    }
+
+    cancelBtn.addEventListener('click', () => {
+      console.log('Cancel checkout clicked');
+      cancelOverlay.hidden = false;
+    });
+
+    leaveBtn.addEventListener('click', () => {
+      window.location.href = '/cart.html';
+    });
+
+    continueBtn.addEventListener('click', () => {
+      cancelOverlay.hidden = true;
+    });
   });
 
   window.HomemadeCookieAuth.requireCustomer().then((user) => {

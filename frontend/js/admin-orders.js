@@ -118,9 +118,8 @@
           View order details
         </button>
 
-        <button type="button" class="btn-primary btn-advance btn-danger-soft" data-id="${o.orderId}"
-          ${['Completed', 'Cancelled'].includes(o.statusName) ? 'disabled' : ''}>
-          Advance status
+        <button type="button" class="btn-secondary btn-advance" data-id="${o.orderId}" ${o.statusId === 1 ? 'disabled' : ''}>
+          ${o.statusId === 1 ? 'Awaiting Payment' : 'Advance status'}
         </button>
 
         <div id="admin-detail-${o.orderId}" class="admin-order-detail" hidden></div>

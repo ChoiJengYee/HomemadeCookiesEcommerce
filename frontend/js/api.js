@@ -189,6 +189,13 @@ window.HomemadeCookieApi = {
     });
   },
 
+  savePendingOrder(payload) {
+    return apiRequest('/orders/save-pending', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
   getMyOrders() {
     const id = getCustomerId();
     if (!id) return Promise.reject(new Error('Please log in as a customer.'));
@@ -366,6 +373,10 @@ window.HomemadeCookieApi = {
       method: 'POST',
       body: JSON.stringify(payload)
     });
+  },
+
+  getOrderReviews(orderId) {
+    return apiRequest(`/reviews/order/${orderId}`);
   },
 
   getAdminReviews() {
