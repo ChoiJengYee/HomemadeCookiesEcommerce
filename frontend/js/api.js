@@ -317,8 +317,13 @@ window.HomemadeCookieApi = {
       body: formData
     });
 
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    const text = await res.text();
+
+    if (!res.ok) {
+      throw new Error(text || `Request failed (${res.status})`);
+    }
+
+    return text ? JSON.parse(text) : null;
   },
 
   deleteCookie(cookieId) {

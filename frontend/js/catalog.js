@@ -5,7 +5,7 @@ const {
   addToWishlist,
   updateCookie,
   deleteCookie,
-  getAdminCategories
+  getCategories
 } = window.HomemadeCookieApi;
 
 const productGridEl = document.getElementById('product-grid');
@@ -154,25 +154,27 @@ async function refreshCartBadge() {
   }
 }
 
-async function loadEditCategories() {
+async function loadEditCategories(selectedCategoryId = '') {
   const select = document.getElementById('editCookieCategoryId');
   if (!select) return;
 
   select.innerHTML = '<option value="">Loading categories...</option>';
 
   try {
-    const categories = await getAdminCategories();
+    const categories = await getCategories();
+
+    currentCategories = categories;
 
     select.innerHTML = '<option value="">Select category</option>';
 
     categories.forEach(category => {
       const option = document.createElement('option');
-
       option.value = category.categoryId ?? category.id;
       option.textContent = category.name ?? category.categoryName;
-
       select.appendChild(option);
     });
+
+    select.value = String(selectedCategoryId);
   } catch (err) {
     console.error(err);
     select.innerHTML = '<option value="">Failed to load categories</option>';
@@ -180,16 +182,13 @@ async function loadEditCategories() {
 }
 
 async function openEditCookieModal(cookie) {
-  if (!currentCategories.length) {
-    await loadEditCategories();
-  }
+  await loadEditCategories(cookie.categoryId);
 
   document.getElementById('editCookieId').value = cookie.cookieId;
   document.getElementById('editCookieName').value = cookie.name;
   document.getElementById('editCookieDescription').value = cookie.description || '';
   document.getElementById('editCookiePrice').value = cookie.price;
   document.getElementById('editCookieStock').value = cookie.stock;
-  document.getElementById('editCookieCategoryId').value = cookie.categoryId;
   document.getElementById('editImagePreview').src = cookie.imageUrl || '/images/cookie-default.svg';
   document.getElementById('editCookieImageFile').value = '';
   document.getElementById('editCookieCurrentImageUrl').value = cookie.imageUrl || '';

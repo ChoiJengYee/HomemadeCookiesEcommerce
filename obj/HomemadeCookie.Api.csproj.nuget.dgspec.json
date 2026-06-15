@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\HomemadeCookie.Api.csproj": {}
+    "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\HomemadeCookie.Api.csproj": {
+    "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\HomemadeCookie.Api.csproj",
+        "projectUniqueName": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
         "projectName": "HomemadeCookie.Api",
-        "projectPath": "C:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\HomemadeCookie.Api.csproj",
+        "projectPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\HomemadeCookie.Api.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\Downloads\\HomemadeCookiesEcommerce-main(1)\\obj\\",
+        "outputPath": "C:\\Users\\user\\Assignment\\HomemadeCookiesEcommerce\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
