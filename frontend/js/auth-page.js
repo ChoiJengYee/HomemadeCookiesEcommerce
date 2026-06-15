@@ -9,6 +9,22 @@
   const params = new URLSearchParams(window.location.search);
   const nextUrl = params.get('next') || '/dashboard.html';
 
+  function showRegisterForm() {
+    if (!registerCard || !loginForm) return;
+    registerCard.hidden = false;
+    loginForm.closest('.card').hidden = true;
+  }
+
+  function showLoginForm() {
+    if (!registerCard || !loginForm) return;
+    registerCard.hidden = true;
+    loginForm.closest('.card').hidden = false;
+  }
+
+  if (params.get('mode') === 'register') {
+    showRegisterForm();
+  }
+
   roleHint?.addEventListener('change', () => {
     const key = roleHint.value;
     if (!key || !window.HomemadeCookieAuth.DEMO_ACCOUNTS[key]) return;
@@ -19,14 +35,12 @@
 
   document.getElementById('show-register')?.addEventListener('click', (e) => {
     e.preventDefault();
-    registerCard.hidden = false;
-    loginForm.closest('.card').hidden = true;
+    showRegisterForm();
   });
 
   document.getElementById('show-login')?.addEventListener('click', (e) => {
     e.preventDefault();
-    registerCard.hidden = true;
-    loginForm.closest('.card').hidden = false;
+    showLoginForm();
   });
 
   function redirectAfterLogin(user) {

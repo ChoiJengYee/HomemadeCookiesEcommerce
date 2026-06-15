@@ -93,7 +93,7 @@
       authHtml = `
         <div class="user-info">
           <a href="/login.html" class="btn-login">🔐 Login</a>
-          <a href="/register.html" class="btn-login" style="margin-top: 8px;">📝 Register</a>
+          <a href="/login.html?mode=register" class="btn-login" style="margin-top: 8px;">📝 Register</a>
         </div>
       `;
     }
