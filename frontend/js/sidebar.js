@@ -55,6 +55,7 @@
         <a href="/cart.html" class="nav-link">🛒 Cart</a>
         <a href="/wishlist.html" class="nav-link">💖 Wishlist</a>
         <a href="/track-order.html" class="nav-link">📦 Orders</a>
+        <a href="/my-reviews.html" class="nav-link">⭐ My Reviews</a>
       `;
       customerSectionHtml = `
         <div class="sidebar-section">

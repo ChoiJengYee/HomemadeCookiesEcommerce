@@ -1356,6 +1356,32 @@ main code {
   resize: vertical;
 }
 
+.review-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-delete-review {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-review:hover {
+    background: #ffebee;
+}
+
+.btn-delete-review:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .admin-review-card {
   margin-top: 0.75rem;
   padding: 1rem;

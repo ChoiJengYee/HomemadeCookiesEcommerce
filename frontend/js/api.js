@@ -270,7 +270,6 @@ window.HomemadeCookieApi = {
     return apiRequest('/admin/categories');
   },
 
-  // Alias for getCategories - use this for consistency
   getAdminCategories() {
     return this.getCategories();
   },
@@ -282,7 +281,6 @@ window.HomemadeCookieApi = {
     });
   },
 
-  // Alias for createCategory
   createAdminCategory(payload) {
     return this.createCategory(payload);
   },
@@ -294,7 +292,6 @@ window.HomemadeCookieApi = {
     });
   },
 
-  // Alias for updateCategory
   updateAdminCategory(id, payload) {
     return this.updateCategory(id, payload);
   },
@@ -305,7 +302,6 @@ window.HomemadeCookieApi = {
     });
   },
 
-  // Alias for deleteCategory
   deleteAdminCategory(id) {
     return this.deleteCategory(id);
   },
@@ -346,17 +342,14 @@ window.HomemadeCookieApi = {
     });
   },
 
-  // Get all products (admin view)
   getAdminProducts() {
     return apiRequest('/admin/products');
   },
 
-  // Get single product for admin
   getAdminProduct(id) {
     return apiRequest(`/admin/products/${id}`);
   },
 
-  // Create product with JSON (if needed)
   createAdminProduct(payload) {
     return apiRequest('/admin/products', {
       method: 'POST',
@@ -364,7 +357,6 @@ window.HomemadeCookieApi = {
     });
   },
 
-  // Update product with JSON (if needed)
   updateAdminProduct(id, payload) {
     return apiRequest(`/admin/products/${id}`, {
       method: 'PUT',
@@ -373,25 +365,57 @@ window.HomemadeCookieApi = {
   },
 
   // ========================
-  // REVIEWS (Admin)
+  // REVIEWS (Complete)
   // ========================
-  createReview(payload) {
-    return apiRequest('/reviews', {
+
+  getOrderReviews(orderId) {
+    return this.apiRequest(`/reviews/order/${orderId}`);
+  },
+
+  getProductReviews(productId) {
+    return this.apiRequest(`/reviews/product/${productId}`);
+  },
+
+  getCustomerReviews(customerId) {
+    return this.apiRequest(`/reviews/customer/${customerId}`);
+  },
+
+  getAverageRating(productId) {
+    return this.apiRequest(`/reviews/average/${productId}`);
+  },
+
+  canReviewProduct(orderId, cookieId) {
+    return this.apiRequest(`/reviews/check?orderId=${orderId}&cookieId=${cookieId}`);
+  },
+
+  getReviewById(reviewId) {
+    return this.apiRequest(`/reviews/${reviewId}`);
+  },
+
+  submitReview(reviewData) {
+    return this.apiRequest('/reviews', {
       method: 'POST',
-      body: JSON.stringify(payload)
+      body: JSON.stringify(reviewData)
     });
   },
 
-  getOrderReviews(orderId) {
-    return apiRequest(`/reviews/order/${orderId}`);
+  // Alias for createReview (for backward compatibility)
+  createReview(reviewData) {
+    return this.submitReview(reviewData);
+  },
+
+  deleteReview(reviewId) {
+    return this.apiRequest(`/reviews/${reviewId}`, {
+      method: 'DELETE'
+    });
   },
 
   getAdminReviews() {
-    return apiRequest('/admin/reviews');
+    return this.apiRequest('/reviews/admin/all');
   },
 
   deleteAdminReview(reviewId) {
-    return apiRequest(`/admin/reviews/${reviewId}`, {
+    return this.apiRequest(`/reviews/admin/${reviewId}`, {
       method: 'DELETE'
     });
   },

@@ -303,9 +303,19 @@ public class AdminController : ControllerBase
     [HttpGet("reviews")]
     public async Task<IActionResult> GetReviews(CancellationToken cancellationToken)
     {
-        var reviews = await _reviewRepository.GetAllAsync(cancellationToken);
+        var reviews = await _reviewRepository.GetAllReviewsAsync(cancellationToken);
         return Ok(reviews);
     }
+
+    [HttpDelete("reviews/{reviewId:int}")]
+public async Task<IActionResult> DeleteReview(int reviewId, CancellationToken cancellationToken)
+{
+    var result = await _reviewRepository.DeleteReviewAsync(reviewId, cancellationToken);
+    if (!result)
+        return NotFound(new { message = "Review not found" });
+
+    return Ok(new { message = "Review deleted successfully" });
+}
 
     // =========================
     // USERS

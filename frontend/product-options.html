@@ -117,6 +117,33 @@
             font-weight: 700;
             color: var(--orange);
         }
+        .review-card {
+    background: var(--cream-section);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brown-soft);
+}
+
+.review-rating {
+    color: var(--orange);
+    font-weight: 700;
+}
+
+.review-comment {
+    margin-top: 6px;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.4;
+}
         .sticky-cart-btn {
             position: sticky;
             bottom: 0;
@@ -277,6 +304,13 @@
                         <div class="option-price">+RM5</div>
                     </div>
                 </div>
+            </div>
+            <!-- ⭐ REVIEWS SECTION -->
+           <div class="option-group">
+                <h3>⭐ Customer Reviews</h3>
+            <div id="reviewsContainer">
+                 <p style="color: var(--text-muted); font-size: 0.9rem;">Loading reviews...</p>
+            </div>
             </div>
 
             <div class="sticky-cart-btn">
