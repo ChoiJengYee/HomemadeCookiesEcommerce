@@ -2,6 +2,7 @@ using HomemadeCookie.Api.Models;
 using HomemadeCookie.Api.Patterns.Facade;
 using HomemadeCookie.Api.Patterns.State;
 using HomemadeCookie.Api.Repositories;
+using HomemadeCookie.Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomemadeCookie.Api.Controllers;
@@ -12,11 +13,16 @@ public class OrdersController : ControllerBase
 {
     private readonly OrderManagementFacade _facade;
     private readonly OrderRepository _orders;
+    private readonly IOrderNotificationFacade _notificationFacade;
 
-    public OrdersController(OrderManagementFacade facade, OrderRepository orders)
+    public OrdersController(
+        OrderManagementFacade facade, 
+        OrderRepository orders,
+        IOrderNotificationFacade notificationFacade)
     {
         _facade = facade;
         _orders = orders;
+        _notificationFacade = notificationFacade;
     }
 
     [HttpPost("checkout")]
@@ -70,31 +76,36 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("{id:int}/cancel")]
-    public async Task<IActionResult> Cancel(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Cancel(int id, [FromBody] CancelOrderRequest? request, CancellationToken cancellationToken)
     {
         var order = await _orders.GetByIdAsync(id, cancellationToken);
         if (order is null)
             return NotFound(new { message = $"Order {id} not found." });
 
-        var context = OrderStateFactory.FromOrder(order.OrderId, order.CustomerId, order.StatusId);
+        // Get email from request or from order
+        string email = request?.Email ?? string.Empty;
+        string reason = request?.Reason ?? "Customer requested cancellation";
 
-        try
+        // If email is empty, try to get it from the order's customer
+        if (string.IsNullOrEmpty(email))
         {
-            context.RequestCancel();
-            await _orders.UpdateStatusAsync(order.OrderId, context.StatusId, cancellationToken);
+            email = await _orders.GetCustomerEmailAsync(order.CustomerId, cancellationToken) ?? string.Empty;
+        }
 
+        // Use the facade's cancel method
+        var result = await _facade.CancelOrderAsync(id, email, reason, cancellationToken);
+
+        if (result.Success)
+        {
             return Ok(new
             {
-                orderId = order.OrderId,
-                statusId = context.StatusId,
-                statusName = context.GetStatus(),
-                message = "Order cancelled successfully."
+                orderId = id,
+                message = result.Message,
+                emailSent = !string.IsNullOrEmpty(email)
             });
         }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+
+        return BadRequest(new { message = result.Message });
     }
 
     [HttpPost("save-pending")]

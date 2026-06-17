@@ -8,6 +8,7 @@
 
   let allOrders = [];
   let selectedFilter = 'All';
+  let currentEmail = ''; // Store current user's email
 
   function formatMoney(value) {
     return `RM ${Number(value).toFixed(2)}`;
@@ -82,6 +83,7 @@
 
         <p><strong>Placed:</strong> ${new Date(data.orderDate).toLocaleString()}</p>
         <p><strong>Total:</strong> ${formatMoney(data.totalAmount)}</p>
+        ${currentEmail ? `<p><strong>Email:</strong> ${currentEmail}</p>` : ''}
 
         <h4>Ordered cookies</h4>
         <ul class="detail-list">
@@ -156,7 +158,8 @@
     document.querySelectorAll('.pay-pending-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const orderId = btn.dataset.id;
-        window.location.href = `/checkout.html?pendingOrderId=${orderId}`;
+        const emailParam = currentEmail ? `&email=${encodeURIComponent(currentEmail)}` : '';
+        window.location.href = `/checkout.html?pendingOrderId=${orderId}${emailParam}`;
       });
     });
   }
@@ -176,21 +179,32 @@
 
   async function cancelOrder(orderId) {
     const cancelBtn = document.getElementById(`cancel-order-btn-${orderId}`);
+    if (!cancelBtn) return;
+    
+    // Confirm cancellation
+    const confirmed = confirm('Are you sure you want to cancel this order?');
+    if (!confirmed) return;
+
     cancelBtn.disabled = true;
+    cancelBtn.textContent = 'Cancelling...';
 
     try {
-      const result = await window.HomemadeCookieApi.cancelOrder(orderId);
+      // Pass the email to the API
+      const result = await window.HomemadeCookieApi.cancelOrder(orderId, currentEmail);
 
       resultBox.hidden = false;
       resultBox.className = 'result success';
-      resultBox.textContent = result.message;
+      resultBox.textContent = result.message || 'Order cancelled successfully. A confirmation email has been sent.';
 
+      // Refresh orders and reload details
       await loadCustomerOrders();
       await loadStatus(orderId);
     } catch (error) {
       resultBox.hidden = false;
       resultBox.className = 'result error';
       resultBox.textContent = error.message;
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = 'Cancel order';
     }
   }
 
@@ -217,6 +231,7 @@
     const customerId = window.HomemadeCookieApi.getCustomerId();
 
     button.disabled = true;
+    button.textContent = 'Submitting...';
 
     try {
       const result = await window.HomemadeCookieApi.createReview({
@@ -229,11 +244,13 @@
 
       resultBox.hidden = false;
       resultBox.className = 'result success';
-      resultBox.textContent = result.message;
+      resultBox.textContent = result.message || 'Review submitted successfully!';
 
-      button.textContent = 'Review submitted';
+      button.textContent = '✅ Review submitted';
+      button.disabled = true;
     } catch (error) {
       button.disabled = false;
+      button.textContent = 'Submit review';
       resultBox.hidden = false;
       resultBox.className = 'result error';
       resultBox.textContent = error.message;
@@ -250,6 +267,13 @@
   });
 
   window.HomemadeCookieAuth.requireCustomer().then((user) => {
-    if (user) loadCustomerOrders();
+    if (user) {
+      // Store user email for cancellation
+      if (user.email) {
+        currentEmail = user.email;
+        console.log('User email stored for cancellation:', currentEmail);
+      }
+      loadCustomerOrders();
+    }
   });
 })();

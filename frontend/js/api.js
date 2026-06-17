@@ -182,42 +182,50 @@ window.HomemadeCookieApi = {
   // ========================
   // ORDERS (CUSTOMER)
   // ========================
-  checkout(payload) {
-    return apiRequest('/orders/checkout', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  },
+  // ========================
+// ORDERS (CUSTOMER)
+// ========================
+checkout(payload) {
+  return apiRequest('/orders/checkout', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+},
 
-  savePendingOrder(payload) {
-    return apiRequest('/orders/save-pending', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  },
+savePendingOrder(payload) {
+  return apiRequest('/orders/save-pending', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+},
 
-  getMyOrders() {
-    const id = getCustomerId();
-    if (!id) return Promise.reject(new Error('Please log in as a customer.'));
-    return apiRequest(`/orders/customer/${id}`);
-  },
+getMyOrders() {
+  const id = getCustomerId();
+  if (!id) return Promise.reject(new Error('Please log in as a customer.'));
+  return apiRequest(`/orders/customer/${id}`);
+},
 
-  getOrderStatus(orderId) {
-    return apiRequest(`/orders/${orderId}/status`);
-  },
+getOrderStatus(orderId) {
+  return apiRequest(`/orders/${orderId}/status`);
+},
 
-  cancelOrder(orderId) {
-    return apiRequest(`/orders/${orderId}/cancel`, {
-      method: 'POST'
-    });
-  },
+// FIXED: Added email and reason parameters
+cancelOrder(orderId, email = '', reason = 'Customer requested cancellation') {
+  return apiRequest(`/orders/${orderId}/cancel`, {
+    method: 'POST',
+    body: JSON.stringify({ 
+      email: email, 
+      reason: reason 
+    })
+  });
+},
 
-  payPendingOrder(orderId, payload) {
-    return apiRequest(`/orders/${orderId}/pay-pending`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  },
+payPendingOrder(orderId, payload) {
+  return apiRequest(`/orders/${orderId}/pay-pending`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+},
 
   // ========================
   // ADMIN REPORTS

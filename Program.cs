@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
 
@@ -15,6 +14,7 @@ DatabaseConnection.Instance.Configure(connectionString);
 
 builder.Services.AddControllers();
 
+// Repositories
 builder.Services.AddSingleton<CartRepository>();
 builder.Services.AddSingleton<CategoryRepository>();
 builder.Services.AddSingleton<CookieRepository>();
@@ -23,10 +23,15 @@ builder.Services.AddSingleton<ReviewRepository>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<WishlistRepository>();
 
+// Infrastructure Services
 builder.Services.AddSingleton<InventorySystem>();
 builder.Services.AddSingleton<PaymentGateway>();
 builder.Services.AddSingleton<EmailService>();
+
+// Facade Pattern - Register both the interface and implementation
+builder.Services.AddSingleton<IOrderNotificationFacade, OrderNotificationFacade>(); // ADD THIS
 builder.Services.AddSingleton<OrderManagementFacade>();
+builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddCors(options =>
 {
@@ -79,6 +84,8 @@ if (Directory.Exists(frontendPath))
         RequestPath = ""
     });
 }
+// In Program.cs, before app.Run()
+app.MapGet("/favicon.ico", () => Results.NotFound());
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -87,4 +94,3 @@ app.MapControllers();
 app.UseStaticFiles();
 
 app.Run();
-

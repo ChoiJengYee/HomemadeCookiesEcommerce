@@ -24,7 +24,7 @@
 
     return {
       ...user,
-      userId: user.userId ?? user.UserId,
+      userId: user.userId ?? user.UserId ?? user.id,
       name: user.name ?? user.Name,
       email: user.email ?? user.Email,
       role: user.role ?? user.Role,
@@ -40,8 +40,11 @@
     currentUser = normalizeUser(user);
 
     if (currentUser) {
-      sessionStorage.setItem('hc_user', JSON.stringify(currentUser));
+      // Use localStorage instead of sessionStorage for persistence
+      localStorage.setItem('user', JSON.stringify(currentUser));
+      sessionStorage.setItem('hc_user', JSON.stringify(currentUser)); // Keep for backward compatibility
     } else {
+      localStorage.removeItem('user');
       sessionStorage.removeItem('hc_user');
     }
 
@@ -50,8 +53,18 @@
 
   function loadStoredUser() {
     try {
-      const raw = sessionStorage.getItem('hc_user');
-      if (raw) currentUser = normalizeUser(JSON.parse(raw));
+      // Try localStorage first (new), then sessionStorage (old)
+      let raw = localStorage.getItem('user');
+      if (!raw) {
+        raw = sessionStorage.getItem('hc_user');
+      }
+      if (raw) {
+        currentUser = normalizeUser(JSON.parse(raw));
+        // Sync to localStorage
+        if (currentUser) {
+          localStorage.setItem('user', JSON.stringify(currentUser));
+        }
+      }
     } catch {
       currentUser = null;
     }
@@ -119,23 +132,20 @@
   }
 
   // -----------------------------
-  // Auth guards (IMPORTANT FIX)
+  // Auth guards
   // -----------------------------
   async function requireRole(role, redirectTo = '/login.html') {
-  const user = currentUser;
+    const user = currentUser;
 
-  if (!user || normalizeRole(user.role) !== normalizeRole(role)) {
+    if (!user || normalizeRole(user.role) !== normalizeRole(role)) {
+      const path = window.location.pathname + window.location.search;
+      const next = encodeURIComponent(path);
+      window.location.href = `${redirectTo}?next=${next}`;
+      return null;
+    }
 
-    const path = window.location.pathname + window.location.search;
-
-    const next = encodeURIComponent(path);
-
-    window.location.href = `${redirectTo}?next=${next}`;
-    return null;
+    return user;
   }
-
-  return user;
-}
 
   async function requireCustomer() {
     return requireRole('customer');
@@ -160,10 +170,8 @@
 
   async function login(email, password) {
     const data = await window.HomemadeCookieApi.login(email, password);
-
     const user = data?.user ?? data;
     saveUser(user);
-
     return data;
   }
 
@@ -173,7 +181,6 @@
     } catch {
       // ignore API errors
     }
-
     saveUser(null);
   }
 
@@ -201,6 +208,9 @@
     logout,
 
     refreshFromServer,
-    updateNav
+    updateNav,
+
+    // Add this for backward compatibility
+    getCustomerId
   };
 })();
