@@ -1,5 +1,6 @@
 using HomemadeCookie.Api.Models;
 using HomemadeCookie.Api.Repositories;
+using HomemadeCookie.Api.Patterns.State;
 
 namespace HomemadeCookie.Api.Patterns.Facade;
 
@@ -340,7 +341,23 @@ public class OrderManagementFacade
             };
         }
 
-        await _orders.UpdateStatusAsync(orderId, OrderStatusIds.Cancelled, cancellationToken);
+        var context = OrderStateFactory.FromOrder(order.OrderId, order.CustomerId, order.StatusId);
+
+        try
+        {
+            context.RequestCancel();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return new PlaceOrderResult
+            {
+                Success = false,
+                Outcome = "CannotCancel",
+                Message = ex.Message
+            };
+        }
+
+        await _orders.UpdateStatusAsync(orderId, context.StatusId, cancellationToken);
 
         if (order.StatusId == OrderStatusIds.Confirmed)
         {
