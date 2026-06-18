@@ -15,6 +15,8 @@ public class CartItemEntity
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal LineTotal => Quantity * UnitPrice;
+    public string ImageUrl { get; set; } = string.Empty;
+    public decimal OriginalPrice { get; set; }
 }
 
 /// <summary>Line item shape used by checkout / Facade (Phase 3).</summary>

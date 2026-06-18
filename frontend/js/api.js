@@ -125,7 +125,9 @@ window.HomemadeCookieApi = {
       body: JSON.stringify({
         cookieId,
         quantity,
-        customPrice: options.customPrice
+        customPrice: options.customPrice,
+        packageType: options.packageType,
+        giftBox: options.giftBox
       })
     });
   },

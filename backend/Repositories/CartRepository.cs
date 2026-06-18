@@ -41,7 +41,8 @@ public class CartRepository
     public async Task<IReadOnlyList<CartItemEntity>> GetItemsAsync(int customerId, CancellationToken cancellationToken = default)
     {
         const string sql = """
-            SELECT ci.cart_item_id, ci.cart_id, ci.cookie_id, c.name, ci.quantity, ci.unit_price
+            SELECT ci.cart_item_id, ci.cart_id, ci.cookie_id, c.name, ci.quantity, ci.unit_price,
+                COALESCE(c.image_url, ''), c.price
             FROM cart_items ci
             INNER JOIN carts cart ON cart.cart_id = ci.cart_id
             INNER JOIN cookies c ON c.cookie_id = ci.cookie_id
@@ -65,7 +66,9 @@ public class CartRepository
                 CookieId = reader.GetInt32(2),
                 CookieName = reader.GetString(3),
                 Quantity = reader.GetInt32(4),
-                UnitPrice = reader.GetDecimal(5)
+                UnitPrice = reader.GetDecimal(5),
+                ImageUrl = reader.GetString(6),
+                OriginalPrice = reader.GetDecimal(7)
             });
         }
 
@@ -119,7 +122,7 @@ public class CartRepository
 
         const string updateSql = """
             UPDATE cart_items ci
-            SET quantity = @quantity, unit_price = @unitPrice
+            SET quantity = @quantity
             FROM carts cart
             WHERE ci.cart_id = cart.cart_id
               AND cart.customer_id = @customerId
@@ -131,7 +134,6 @@ public class CartRepository
         await connection.OpenAsync(cancellationToken);
         await using var command = new NpgsqlCommand(updateSql, connection);
         command.Parameters.AddWithValue("quantity", quantity);
-        command.Parameters.AddWithValue("unitPrice", cookie.Price);
         command.Parameters.AddWithValue("customerId", customerId);
         command.Parameters.AddWithValue("cookieId", cookieId);
         command.Parameters.AddWithValue("cartId", cartId);

@@ -53,25 +53,79 @@ function renderCart(data) {
 
   cartItemsEl.innerHTML = items.map((item) => {
     const name = escapeHtml(item.cookieName);
+    const image = item.imageUrl || '/images/default-cookie.jpg';
+    const original = Number(item.originalPrice ?? item.unitPrice);
+    const current = Number(item.unitPrice);
+    const originalLineTotal = original * item.quantity;
+    const currentLineTotal = current * item.quantity;
+    const hasDiscount = currentLineTotal < originalLineTotal;
+
+    const isBox = item.quantity >= 5 && current <= original;
+    const hasGiftBox = Math.abs(current - (original + 5)) < 0.01;
+
     return `
       <article class="cart-row" data-cookie-id="${item.cookieId}">
+        <label class="cart-select">
+          <input type="checkbox" class="cart-check" checked>
+        </label>
+
+        <img class="cart-item-img" src="${image}" alt="${name}">
+
         <div class="cart-row-info">
           <h3>${name}</h3>
-          <p class="cart-row-price">${formatPrice(item.unitPrice)} each</p>
+
+          <div class="cart-tags">
+            <span>${isBox ? 'Box package' : 'À la carte'}</span>
+            ${hasGiftBox ? '<span>Gift box +RM5</span>' : ''}
+          </div>
+
+          <p class="cart-row-price">
+            ${hasDiscount
+              ? `<span class="old-price">${formatPrice(original)}</span>
+                <strong class="discount-price">${formatPrice(current)}</strong>`
+              : `<strong>${formatPrice(current)}</strong>`
+            }
+            <span> each</span>
+          </p>
         </div>
+
         <div class="cart-row-actions">
           <div class="qty-control" aria-label="Quantity for ${name}">
-            <button type="button" class="qty-btn" data-action="decrease" aria-label="Decrease quantity">−</button>
+            <button type="button" class="qty-btn" data-action="decrease">−</button>
             <span class="qty-value">${item.quantity}</span>
-            <button type="button" class="qty-btn" data-action="increase" aria-label="Increase quantity">+</button>
+            <button type="button" class="qty-btn" data-action="increase">+</button>
           </div>
-          <p class="line-total">${formatPrice(item.lineTotal)}</p>
+
+          <p class="line-total" data-line-total="${currentLineTotal}">
+            ${hasDiscount
+              ? `<span class="line-original-price">${formatPrice(originalLineTotal)}</span>
+                <strong class="line-discount-price">${formatPrice(currentLineTotal)}</strong>`
+              : `<strong>${formatPrice(currentLineTotal)}</strong>`
+            }
+          </p>
           <button type="button" class="btn-link danger" data-action="remove">Remove</button>
         </div>
       </article>`;
   }).join('');
 
   cartTotalEl.textContent = formatPrice(data.total);
+
+  updateSelectedTotal();
+}
+
+function updateSelectedTotal() {
+  const rows = [...document.querySelectorAll('.cart-row')];
+  let total = 0;
+
+  rows.forEach(row => {
+    const checked = row.querySelector('.cart-check')?.checked;
+    if (!checked) return;
+
+    const lineTotal = Number(row.querySelector('.line-total')?.dataset.lineTotal || 0);
+    total += lineTotal;
+  });
+
+  cartTotalEl.textContent = formatPrice(total);
 }
 
 async function loadCart() {
@@ -115,6 +169,26 @@ cartItemsEl.addEventListener('click', async (event) => {
     await loadCart();
   } catch (err) {
     showMessage(err.message, true);
+  }
+});
+
+document.getElementById('checkout-selected')?.addEventListener('click', (event) => {
+  const selectedIds = [...document.querySelectorAll('.cart-row')]
+    .filter(row => row.querySelector('.cart-check')?.checked)
+    .map(row => Number(row.dataset.cookieId));
+
+  if (selectedIds.length === 0) {
+    event.preventDefault();
+    showMessage('Please select at least one product to checkout.', true);
+    return;
+  }
+
+  sessionStorage.setItem('selectedCartCookieIds', JSON.stringify(selectedIds));
+});
+
+cartItemsEl.addEventListener('change', (event) => {
+  if (event.target.classList.contains('cart-check')) {
+    updateSelectedTotal();
   }
 });
 
