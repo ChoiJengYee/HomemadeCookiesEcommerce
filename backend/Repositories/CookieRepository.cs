@@ -153,12 +153,27 @@ public class CookieRepository
 
     public async Task<bool> DeleteAsync(int cookieId, CancellationToken cancellationToken = default)
     {
-        const string sql = "DELETE FROM cookies WHERE cookie_id = @cookieId";
-
         await using var connection = DatabaseConnection.Instance.CreateConnection();
         await connection.OpenAsync(cancellationToken);
-        await using var command = new NpgsqlCommand(sql, connection);
 
+        const string checkSql = """
+            SELECT COUNT(*) 
+            FROM order_items 
+            WHERE cookie_id = @cookieId
+            """;
+
+        await using (var checkCommand = new NpgsqlCommand(checkSql, connection))
+        {
+            checkCommand.Parameters.AddWithValue("cookieId", cookieId);
+            var count = Convert.ToInt32(await checkCommand.ExecuteScalarAsync(cancellationToken));
+
+            if (count > 0)
+                throw new InvalidOperationException("This cookie cannot be deleted because it already exists in customer orders.");
+        }
+
+        const string sql = "DELETE FROM cookies WHERE cookie_id = @cookieId";
+
+        await using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("cookieId", cookieId);
 
         return await command.ExecuteNonQueryAsync(cancellationToken) > 0;

@@ -249,8 +249,15 @@ public class AdminController : ControllerBase
     [HttpDelete("cookies/{id:int}")]
     public async Task<IActionResult> DeleteCookie(int id, CancellationToken cancellationToken)
     {
-        var deleted = await _cookieRepository.DeleteAsync(id, cancellationToken);
-        return deleted ? NoContent() : NotFound(new { message = $"Cookie {id} not found." });
+        try
+        {
+            var deleted = await _cookieRepository.DeleteAsync(id, cancellationToken);
+            return deleted ? NoContent() : NotFound(new { message = $"Cookie {id} not found." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     // =========================
