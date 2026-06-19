@@ -4,7 +4,6 @@
   const loginResult = document.getElementById('login-result');
   const registerResult = document.getElementById('register-result');
   const registerCard = document.getElementById('register-card');
-  const roleHint = document.getElementById('roleHint');
 
   const params = new URLSearchParams(window.location.search);
   const nextUrl = params.get('next') || '/dashboard.html';
@@ -24,14 +23,6 @@
   if (params.get('mode') === 'register') {
     showRegisterForm();
   }
-
-  roleHint?.addEventListener('change', () => {
-    const key = roleHint.value;
-    if (!key || !window.HomemadeCookieAuth.DEMO_ACCOUNTS[key]) return;
-    const acc = window.HomemadeCookieAuth.DEMO_ACCOUNTS[key];
-    document.getElementById('email').value = acc.email;
-    document.getElementById('password').value = acc.password;
-  });
 
   document.getElementById('show-register')?.addEventListener('click', (e) => {
     e.preventDefault();
